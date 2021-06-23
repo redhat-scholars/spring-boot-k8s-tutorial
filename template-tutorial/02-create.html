@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Welcome to Template Tutorial :: Template Tutorial</title>
-    <link rel="canonical" href="https://redhat-scholars.github.io/course-template/template-tutorial/index.html">
-    <link rel="next" href="01-setup.html">
+    <title>Create a Spring Boot application :: Template Tutorial</title>
+    <link rel="canonical" href="https://redhat-scholars.github.io/course-template/template-tutorial/02-create.html">
+    <link rel="prev" href="01-setup.html">
+    <link rel="next" href="#02-deploy.adoc#startspringboot">
     <meta name="generator" content="Antora 2.3.4">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -82,7 +83,7 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item is-current-page" data-depth="1">
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="02-create.html">2. Create Application</a>
 <ul class="nav-list">
@@ -178,52 +179,101 @@
 <main class="article">
 <div class="toolbar" role="navigation">
 <button class="nav-toggle"></button>
-  <a href="index.html" class="home-link is-current"></a>
+  <a href="index.html" class="home-link"></a>
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Template Tutorial</a></li>
-    <li><a href="index.html">Welcome to Template Tutorial</a></li>
+    <li><a href="02-create.html">2. Create Application</a></li>
   </ul>
 </nav>
-  <div class="edit-this-page"><a href="https://github.com/lordofthejars/spring-boot-k8s-tutorial/edit/master/documentation/modules/ROOT/pages/index.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/lordofthejars/spring-boot-k8s-tutorial/edit/master/documentation/modules/ROOT/pages/02-create.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <article class="doc">
-<h1 class="page">Welcome to Template Tutorial</h1>
-<div class="sect1 text-center strong">
-<h2>Publish Services to Kubernetes</h2>
+<h1 class="page">Create a Spring Boot application</h1>
+<div class="sect1">
+<h2 id="startspringboot"><a class="anchor" href="#startspringboot"></a>Skaffold a Spring Boot</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A Kubernetes tutorial to show how you can deploy a Java service to a Kubernetes cluster as it was a child game.</p>
+<p>The first thing we need is a Spring Boot application.
+To skaffold it, we use the Spring Initilizr web page located at <a href="https://start.spring.io/" class="bare">https://start.spring.io/</a>.</p>
+</div>
+<div class="paragraph">
+<p>In the page, fill the form with the values shown in <a href="#start-spring">Spring Initializr</a>, keeping an eye to add Spring Web, Resilience4J and Spring Boot Actuator.</p>
+</div>
+<div id="start-spring" class="imageblock">
+<div class="content">
+<img src="_images/start-spring.png" alt="start spring">
+</div>
+<div class="title">Figure 1. Spring Initializr</div>
+</div>
+<div class="paragraph">
+<p>Push the <code>Generate</code> button which will download the source code.</p>
+</div>
+<div class="paragraph">
+<p>Unzip the downloaded file and open the project in your favourite IDE:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">unzip hello-kubernetes.zip
+cd hello-kubernetes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In your IDE, create a new class named <code>HelloController</code> in <code>org.acme.hellokubernetes</code> package:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.acme.hellokubernetes;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloController {
+
+    @GetMapping("/hello")
+    String hello() {
+      return "Hello World";
+    }
+
+}</code></pre>
 </div>
 </div>
 </div>
-<div class="sect1 tiles browse">
-<h2>Browse modules</h2>
+</div>
+<div class="sect1">
+<h2 id="buildrun"><a class="anchor" href="#buildrun"></a>Build and Run</h2>
 <div class="sectionbody">
-<div class="ulist tile">
-<div class="title"><a href="01-setup.html" class="page">Get Started</a></div>
-<ul>
-<li>
-<p><a href="01-setup.html#minikube" class="page">Minikube</a></p>
-</li>
-</ul>
+<div class="paragraph">
+<p>We can build the project and run it:</p>
 </div>
-<div class="ulist tile">
-<div class="title"><a href="#02-deploy.adoc" class="page unresolved">Deploying</a></div>
-<ul>
-<li>
-<p><a href="#02-deploy.adoc#package" class="page unresolved">Package the Application</a></p>
-</li>
-<li>
-<p><a href="#02-deploy.adoc#deploy" class="page unresolved">Deploy the Application</a></p>
-</li>
-</ul>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw package -DskipTests
+
+java -jar target/hello-kubernetes-0.0.1-SNAPSHOT.jar</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/hello</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Hello World</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So far, nothing new, we&#8217;ve skafolded a simple Spring Boot Rest API.
+In the following section, we&#8217;ll start looking at how to "Kubernetize" a Spring Boot application.</p>
 </div>
 </div>
 </div>
 <nav class="pagination">
-  <span class="next"><a href="01-setup.html">1. Setup</a></span>
+  <span class="prev"><a href="01-setup.html">1. Setup</a></span>
+  <span class="next"><a href="#02-deploy.adoc#startspringboot">Skaffold Sping Boot App.</a></span>
 </nav>
 </article>
 <aside class="toc sidebar" data-title="Contents" data-levels="2">

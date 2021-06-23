@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Spring Boot Actuators :: Template Tutorial</title>
+    <link rel="canonical" href="https://redhat-scholars.github.io/course-template/template-tutorial/04-actuators.html">
+    <link rel="prev" href="03-kubernetes.html">
+    <link rel="next" href="05-resiliency.html">
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../_/css/site.css">
+<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" href="https://redhat-scholars.github.io/course-template">Template Tutorial</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#">Books</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">CheatSheets</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">CheatSheet A</a>
+            <a class="navbar-item" href="#">CheatSheet B</a>
+            <a class="navbar-item" href="#">CheatSheet C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Upcoming Events</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Event A</a>
+            <a class="navbar-item" href="#">Event B</a>
+            <a class="navbar-item" href="#">Event C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Tutorial A</a>
+            <a class="navbar-item" href="#">Tutorial B</a>
+            <a class="navbar-item" href="#">Tutorial C</a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="#">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="template-tutorial" data-version="master">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Template Tutorial</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="01-setup.html">1. Setup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup.html#prerequisite">Prerequisites</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup.html#minikube">Setup Minikube</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="02-create.html">2. Create Application</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#02-deploy.adoc#startspringboot">Skaffold Sping Boot App.</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#02-deploy.adoc#buildrun">Build &amp; Run</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-kubernetes.html">3. Kubernetize Application</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-kubernetes.html#jkube">JKube</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-kubernetes.html#create">Create Container</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-kubernetes.html#deploy">Deploy Container</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="04-actuators.html">4. Spring Boot Actuator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#heatlhcheck">Health Check Actuator</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#metrics">Metrics</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="05-resiliency.html">5. Resiliency</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="05-resiliency.html#restclient">Rest Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="05-resiliency.html#resiliency">Resiliency</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="05-resiliency.html#timeout">Timeout</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="05-resiliency.html#fallback">Fallback</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="05-resiliency.html#circuitbreaker">Circuit Breaker</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="05-resiliency.html#retry">Retry</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Template Tutorial</span>
+    <span class="version">master</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Template Tutorial</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">master</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Template Tutorial</a></li>
+    <li><a href="04-actuators.html">4. Spring Boot Actuator</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/lordofthejars/spring-boot-k8s-tutorial/edit/master/documentation/modules/ROOT/pages/04-actuators.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Spring Boot Actuators</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring Boot includes a number of additional features in the form of actuators.
+Some of these featuresbare health checks, tracing or monitoring.
+Let&#8217;s explore some of them:</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="heatlhcheck"><a class="anchor" href="#heatlhcheck"></a>Health Check Actuator</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When we created the project, we already set the actuator dependencies, so we don&#8217;t need to register them in the <code>pom.xml</code>.</p>
+</div>
+<div class="paragraph">
+<p>By default some <code>HealthIndicators</code> are registerd to report the state of the application.
+Some of them are generic and others are specific to a technology. To mention a few:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>DiskSpaceHealthIndicator</p>
+</li>
+<li>
+<p>PingHealthIndicator</p>
+</li>
+<li>
+<p>DataSourceHealthIndicator (if datasource is used)</p>
+</li>
+<li>
+<p>MongoHealthIndicator (if MongoDB is used)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sending a request to <code>/actuator/health</code> endpoint returns an agrgegated result of all registered health indicators.</p>
+</div>
+<div class="paragraph">
+<p>Unresolved include directive in modules/ROOT/pages/04-actuators.adoc - include::partial$package_run.adoc[]</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://localhost:8080/actuator/health" class="bare">http://localhost:8080/actuator/health</a></code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">{"status":"UP"}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_custom_health_indicator"><a class="anchor" href="#_custom_health_indicator"></a>Custom Health Indicator</h3>
+<div class="paragraph">
+<p>A custom health check indicator may be implemented implementing <code>org.springframework.boot.actuate.health.HealthIndicator</code> interface.
+Create a new class named <code>LuckyHealthIndicator</code>.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.acme.hellokubernetes;
+
+import java.time.LocalTime;
+
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.stereotype.Component;
+
+@Component("lucky")
+public class LuckyHealthIndicator implements HealthIndicator {
+
+    @Override
+    public Health health() {
+        final LocalTime currentTime = LocalTime.now();
+        final Health.Builder healthBuilder = currentTime.getMinute() % 2 == 0 ?
+                                Health.up()
+                                :
+                                Health.down().withDetail("time", currentTime);
+
+        return healthBuilder.build();
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Unresolved include directive in modules/ROOT/pages/04-actuators.adoc - include::partial$package_run.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Now depending on the minute you do the request, you may receive an <code>UP</code> or <code>DOWN</code> as a result:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://localhost:8080/actuator/health" class="bare">http://localhost:8080/actuator/health</a> -vv</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">&lt; HTTP/1.1 200
+&lt; Content-Type: application/vnd.spring-boot.actuator.v3+json
+&lt; Transfer-Encoding: chunked
+&lt; Date: Thu, 20 May 2021 11:38:32 GMT
+{"status":"DOWN"}</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://localhost:8080/actuator/health" class="bare">http://localhost:8080/actuator/health</a> -vv</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">&lt; HTTP/1.1 503
+&lt; Content-Type: application/vnd.spring-boot.actuator.v3+json
+&lt; Transfer-Encoding: chunked
+&lt; Date: Thu, 20 May 2021 11:39:04 GMT
+{"status":"UP"}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_custom_configuration"><a class="anchor" href="#_custom_configuration"></a>Custom Configuration</h3>
+<div class="paragraph">
+<p>There is a special health check configuration parameter that adds details to health check response.
+Open <code>src/main/resources/application.properties</code> file and add the following property:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">application.properties</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">management.endpoint.health.show-details=always</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Unresolved include directive in modules/ROOT/pages/04-actuators.adoc - include::partial$package_run.adoc[]</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://localhost:8080/actuator/health" class="bare">http://localhost:8080/actuator/health</a></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output contains some details about all registered health indicators:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">{"status":"UP","components":{"discoveryComposite":{"description":"Discovery Client not initialized","status":"UNKNOWN","components":{"discoveryClient":{"description":"Discovery Client not initialized","status":"UNKNOWN"}}},"diskSpace":{"status":"UP","details":{"total":500068036608,"free":77511536640,"threshold":10485760,"exists":true}},"lucky":{"status":"UP"},"ping":{"status":"UP"},"refreshScope":{"status":"UP"}}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also, it&#8217;s possible to get the status of specific health indicator sending request to <code>/actuator/health/{name}</code>, where <code>name</code> is the prefix part of the health indicator class name.
+For example, in the case of <code>LuckyHealthIndicator</code>, the name of the health indicator is <code>lucky</code>.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://localhost:8080/actuator/health/lucky" class="bare">http://localhost:8080/actuator/health/lucky</a></code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">{"status":"DOWN","details":{"time":"13:39:04.458205"}}</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Finally delete the <code>LuckyHealthIndicator.java</code> file to not affect the readiness of the application when deployed in the Kubernetes cluster.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="metrics"><a class="anchor" href="#metrics"></a>Metrics Actuator</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring Boot Actuator provides support for <a href="https://micrometer.io/">Micrometer</a> project to provide application metrics.</p>
+</div>
+<div class="sect2">
+<h3 id="_prometheus"><a class="anchor" href="#_prometheus"></a>Prometheus</h3>
+<div class="paragraph">
+<p>Micrometer supports several monitoring systems such as Prometheus, Elastic, Dynatrace, &#8230;&#8203;
+For this tutorial, we are going to use Prometheus as a metrics format.</p>
+</div>
+<div class="paragraph">
+<p>The first thing to do is registering the <code>io.micrometer:micrometer-registry-prometheus</code> dependency:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+	&lt;groupId&gt;io.micrometer&lt;/groupId&gt;
+	&lt;artifactId&gt;micrometer-registry-prometheus&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, we need to update the <code>application.properties</code> to expose metrics endpoints (in fact since we are going to need more endpoints in the course of this tutorial):</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">application.properties</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">management.endpoints.web.exposure.include=*</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Unresolved include directive in modules/ROOT/pages/04-actuators.adoc - include::partial$package_run.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Now, two new endpoints related to monitoring are available:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://localhost:8080/actuator/metrics" class="bare">http://localhost:8080/actuator/metrics</a></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sends the current monitoring parameters:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">{"names":["http.server.requests","jvm.buffer.count","jvm.buffer.memory.used","jvm.buffer.total.capacity","jvm.classes.loaded","jvm.classes.unloaded","jvm.gc.live.data.size","jvm.gc.max.data.size","jvm.gc.memory.allocated","jvm.gc.memory.promoted","jvm.gc.pause","jvm.memory.committed","jvm.memory.max","jvm.memory.used","jvm.threads.daemon","jvm.threads.live","jvm.threads.peak","jvm.threads.states","logback.events","process.cpu.usage","process.files.max","process.files.open","process.start.time","process.uptime","system.cpu.count","system.cpu.usage","system.load.average.1m","tomcat.sessions.active.current","tomcat.sessions.active.max","tomcat.sessions.alive.max","tomcat.sessions.created","tomcat.sessions.expired","tomcat.sessions.rejected"]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To consume the metrics, we use another endpoint:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://localhost:8080/actuator/prometheus" class="bare">http://localhost:8080/actuator/prometheus</a></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the metrics output is in the Prometheus format:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># HELP process_cpu_usage The "recent cpu usage" for the Java Virtual Machine process
+# TYPE process_cpu_usage gauge
+process_cpu_usage 0.0
+# HELP tomcat_sessions_expired_sessions_total
+# TYPE tomcat_sessions_expired_sessions_total counter
+tomcat_sessions_expired_sessions_total 0.0
+# HELP process_uptime_seconds The uptime of the Java virtual machine
+# TYPE process_uptime_seconds gauge
+process_uptime_seconds 195.939
+....
+# HELP tomcat_sessions_active_max_sessions
+# TYPE tomcat_sessions_active_max_sessions gauge
+tomcat_sessions_active_max_sessions 0.0
+# HELP jvm_gc_live_data_size_bytes Size of long-lived heap memory pool after reclamation
+# TYPE jvm_gc_live_data_size_bytes gauge
+jvm_gc_live_data_size_bytes 0.0
+# HELP jvm_gc_memory_promoted_bytes_total Count of positive increases in the size of the old generation memory pool before GC to after GC
+# TYPE jvm_gc_memory_promoted_bytes_total counter
+jvm_gc_memory_promoted_bytes_total 2834944.0</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_customizing_metrics"><a class="anchor" href="#_customizing_metrics"></a>Customizing Metrics</h3>
+<div class="paragraph">
+<p>We can create custom metrics injecting <code>io.micrometer.core.instrument.MeterRegistry</code> in the constructor and registering the metric.</p>
+</div>
+<div class="paragraph">
+<p>Open <code>HelloController</code> class and add the following content:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.acme.hellokubernetes;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+
+@RestController
+public class HelloController {
+
+    private Set&lt;String&gt; names = new HashSet&lt;&gt;();
+
+    public HelloController(MeterRegistry registry) { <i class="conum" data-value="1"></i><b>(1)</b>
+      registry.gaugeCollectionSize("names.size", Tags.empty(), names); <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    @GetMapping("/hello")
+    String hello() {
+      return "Hello World";
+    }
+
+    @GetMapping("/hello/{name}")
+    String helloWithName(@PathVariable("name") String name) {
+      names.add(name); <i class="conum" data-value="3"></i><b>(3)</b>
+      return "Hello World " + name;
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Injects <code>MeterRegistry</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Registers a new gauge counting the number of elements inserted at <code>names</code> collection</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Adds the given name to the collection</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Unresolved include directive in modules/ROOT/pages/04-actuators.adoc - include::partial$package_run.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Then make a request to <code>/hello/Alex</code> and then get the metrics (optionally filtering by <code>names.size</code> key used to register the gauge):</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/hello/Alex
+
+curl <a href="http://localhost:8080/actuator/prometheus" class="bare">http://localhost:8080/actuator/prometheus</a> | grep names.size</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And metric is updated.</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># HELP names_size
+# TYPE names_size gauge
+names_size 1.0</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="03-kubernetes.html">3. Kubernetize Application</a></span>
+  <span class="next"><a href="05-resiliency.html">5. Resiliency</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../_/js/vendor/clipboard.js"></script>
+<script src="../_/js/site.js"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

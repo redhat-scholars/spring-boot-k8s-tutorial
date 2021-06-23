@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Kubernetize a Spring Boot application :: Template Tutorial</title>
+    <link rel="canonical" href="https://redhat-scholars.github.io/course-template/template-tutorial/03-kubernetes.html">
+    <link rel="prev" href="#02-deploy.adoc#buildrun">
+    <link rel="next" href="04-actuators.html">
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../_/css/site.css">
+<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" href="https://redhat-scholars.github.io/course-template">Template Tutorial</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#">Books</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">CheatSheets</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">CheatSheet A</a>
+            <a class="navbar-item" href="#">CheatSheet B</a>
+            <a class="navbar-item" href="#">CheatSheet C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Upcoming Events</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Event A</a>
+            <a class="navbar-item" href="#">Event B</a>
+            <a class="navbar-item" href="#">Event C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Tutorial A</a>
+            <a class="navbar-item" href="#">Tutorial B</a>
+            <a class="navbar-item" href="#">Tutorial C</a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="#">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="template-tutorial" data-version="master">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Template Tutorial</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="01-setup.html">1. Setup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup.html#prerequisite">Prerequisites</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup.html#minikube">Setup Minikube</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="02-create.html">2. Create Application</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#02-deploy.adoc#startspringboot">Skaffold Sping Boot App.</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#02-deploy.adoc#buildrun">Build &amp; Run</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-kubernetes.html">3. Kubernetize Application</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="#jkube">JKube</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#create">Create Container</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#deploy">Deploy Container</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="04-actuators.html">4. Spring Boot Actuator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-actuators.html#heatlhcheck">Health Check Actuator</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-actuators.html#metrics">Metrics</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="05-resiliency.html">5. Resiliency</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="05-resiliency.html#restclient">Rest Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="05-resiliency.html#resiliency">Resiliency</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="05-resiliency.html#timeout">Timeout</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="05-resiliency.html#fallback">Fallback</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="05-resiliency.html#circuitbreaker">Circuit Breaker</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="05-resiliency.html#retry">Retry</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Template Tutorial</span>
+    <span class="version">master</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Template Tutorial</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">master</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Template Tutorial</a></li>
+    <li><a href="03-kubernetes.html">3. Kubernetize Application</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/lordofthejars/spring-boot-k8s-tutorial/edit/master/documentation/modules/ROOT/pages/03-kubernetes.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Kubernetize a Spring Boot application</h1>
+<div class="sect1">
+<h2 id="jkube"><a class="anchor" href="#jkube"></a>JKube</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring Boot project offers several options out-of-the-box for containerizing an application.
+All of them, might fit your requirements but they just cover one part of the equation, that is creating a continer, but it isn&#8217;t implements the creation of the Kubernetes resources nor the deployment of them.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://www.eclipse.org/jkube/">Eclipse JKube</a> is a collection of plugins and libraries that are used for building container images using Docker, JIB or S2I build strategies. Eclipse JKube generates and deploys Kubernetes/OpenShift manifests at compile time too.</p>
+</div>
+<div class="paragraph">
+<p>Open <code>pom.xml</code> file and add the following properties at <code>&lt;properties&gt;</code> section:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;jkube.build.strategy&gt;jib&lt;/jkube.build.strategy&gt;
+&lt;jkube.generator.name&gt;quay.io/lordofthejars/sb-hw:${project.version}&lt;/jkube.generator.name&gt;</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Substitute <code>quay.io</code> for your container registry and <code>lordofthejars</code> with your username.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Then add the <code>jkube</code> plugin at <code>plugins</code> section just after the <code>spring-boot-maven-plugin</code> plugin:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;plugin&gt;
+	&lt;groupId&gt;org.eclipse.jkube&lt;/groupId&gt;
+	&lt;artifactId&gt;kubernetes-maven-plugin&lt;/artifactId&gt;
+	&lt;version&gt;1.2.0&lt;/version&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Login into container registry running:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">docker login quay.io</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can set username/password in the jkube project, but if not then <code>docker login</code> session is used.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="create"><a class="anchor" href="#create"></a>Building &amp; Pushing</h3>
+<div class="paragraph">
+<p>To build the Linux container image and push it to container registry run the following Maven goals:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw compile k8s:build k8s:push</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">[INFO] k8s: Running in Kubernetes mode
+[INFO] k8s: Building Docker image in Kubernetes mode
+[INFO] k8s: Running generator spring-boot
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java-binary-s2i:0.0.9 as base / builder
+[INFO] k8s: JIB image build started
+JIB&gt; Base image 'quay.io/jkube/jkube-java-binary-s2i:0.0.9' does not use a specific image digest - build may not be reproducible
+JIB&gt; Containerizing application with the following files:
+JIB&gt; 	:
+JIB&gt; 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/Dockerfile
+JIB&gt; 	:
+JIB&gt; 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/deployments
+JIB&gt; 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/deployments/hello-kubernetes-0.0.1-SNAPSHOT.jar
+JIB&gt; Getting manifest for base image quay.io/jkube/jkube-java-binary-s2i:0.0.9...
+JIB&gt; Building  layer...
+JIB&gt; Building  layer...
+JIB&gt; Using base image with digest: sha256:dd5c9f44a86e19438662d293e180acc8d864887cf19c165c1b24ae703b16c2d4
+JIB&gt; Container program arguments set to [/usr/local/s2i/run] (inherited from base image)
+JIB&gt; Building image to tar file...
+JIB&gt; [========================      ] 80.0% complete &gt; writing to tar file
+JIB&gt; [==============================] 100.0% complete
+[INFO] k8s:  /Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/tmp/docker-build.tar successfully built
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="deploy"><a class="anchor" href="#deploy"></a>Kubernetes Resources</h3>
+<div class="paragraph">
+<p>JKube can generate an opinionated Kubernetes resources file for a Spring Boot application setting the image name generated in the previous step:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw compile k8s:resource</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">[INFO] --- kubernetes-maven-plugin:1.2.0:resource (default-cli) @ hello-kubernetes ---
+[WARNING] k8s: Cannot access cluster for detecting mode: Unknown host kubernetes.default.svc: nodename nor servname provided, or not known
+[INFO] k8s: Running generator spring-boot
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java-binary-s2i:0.0.9 as base / builder
+[INFO] k8s: Using resource templates from /Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/src/main/jkube <i class="conum" data-value="1"></i><b>(1)</b>
+[INFO] k8s: jkube-controller: Adding a default Deployment
+[INFO] k8s: jkube-service: Adding a default service 'hello-kubernetes' with ports [8080] <i class="conum" data-value="2"></i><b>(2)</b>
+[INFO] k8s: jkube-healthcheck-spring-boot: Adding readiness probe on port 8080, path='/actuator/health', scheme='HTTP', with initial delay 10 seconds <i class="conum" data-value="3"></i><b>(3)</b>
+[INFO] k8s: jkube-healthcheck-spring-boot: Adding liveness probe on port 8080, path='/actuator/health', scheme='HTTP', with initial delay 180 seconds
+[INFO] k8s: jkube-service-discovery: Using first mentioned service port '8080'
+[INFO] k8s: jkube-revision-history: Adding revision history limit to 2
+[INFO] ------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Customizations can be placed in this directory.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Port is taken from Spring Boot configuration.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Since health actuator is registered liveness/readiness probes are set. More about this later.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The generated Kubernetes file is located at <code>arget/classes/META-INF/jkube</code> directory:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat target/classes/META-INF/jkube/kubernetes.yml</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">---
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      jkube.io/git-url: <a href="mailto:git@github.com">git@github.com</a>:lordofthejars/spring-boot-k8s-tutorial.git
+      jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
+      jkube.io/git-branch: master
+      jkube.io/scm-url: <a href="https://github.com/spring-projects/spring-boot/hello-kubernetes" class="bare">https://github.com/spring-projects/spring-boot/hello-kubernetes</a>
+      jkube.io/scm-tag: HEAD
+      prometheus.io/path: /metrics
+      prometheus.io/port: "9779"
+      prometheus.io/scrape: "true"
+    labels:
+      expose: "true"
+      app: hello-kubernetes
+      provider: jkube
+      version: 0.0.1-SNAPSHOT
+      group: org.acme
+    name: hello-kubernetes
+  spec:
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: hello-kubernetes
+      provider: jkube
+      group: org.acme
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      jkube.io/git-url: <a href="mailto:git@github.com">git@github.com</a>:lordofthejars/spring-boot-k8s-tutorial.git
+      jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
+      jkube.io/git-branch: master
+      jkube.io/scm-url: <a href="https://github.com/spring-projects/spring-boot/hello-kubernetes" class="bare">https://github.com/spring-projects/spring-boot/hello-kubernetes</a>
+      jkube.io/scm-tag: HEAD
+    labels:
+      app: hello-kubernetes
+      provider: jkube
+      version: 0.0.1-SNAPSHOT
+      group: org.acme
+    name: hello-kubernetes
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 2
+    selector:
+      matchLabels:
+        app: hello-kubernetes
+        provider: jkube
+        group: org.acme
+    template:
+      metadata:
+        annotations:
+          jkube.io/scm-url: <a href="https://github.com/spring-projects/spring-boot/hello-kubernetes" class="bare">https://github.com/spring-projects/spring-boot/hello-kubernetes</a>
+          jkube.io/git-url: <a href="mailto:git@github.com">git@github.com</a>:lordofthejars/spring-boot-k8s-tutorial.git
+          jkube.io/scm-tag: HEAD
+          jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
+          jkube.io/git-branch: master
+        labels:
+          app: hello-kubernetes
+          provider: jkube
+          version: 0.0.1-SNAPSHOT
+          group: org.acme
+      spec:
+        containers:
+        - env:
+          - name: KUBERNETES_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: quay.io/lordofthejars/sb-hw:0.0.1-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 180
+            successThreshold: 1
+          name: spring-boot
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          - containerPort: 9779
+            name: prometheus
+            protocol: TCP
+          - containerPort: 8778
+            name: jolokia
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            successThreshold: 1
+          securityContext:
+            privileged: false</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kubernetes_deploy"><a class="anchor" href="#_kubernetes_deploy"></a>Kubernetes Deploy</h3>
+<div class="paragraph">
+<p>The last step is to deploy the application to the Kubernetes cluster.
+We can deploy application using <code>kubectl</code> CLI tool:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f target/classes/META-INF/jkube/kubernetes.yml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or we use <code>k8s:apply</code> goal.
+This goal takes the resources created with <code>k8s:resource</code> goal :</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw k8s:apply</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="#02-deploy.adoc#buildrun">Build &amp; Run</a></span>
+  <span class="next"><a href="04-actuators.html">4. Spring Boot Actuator</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../_/js/vendor/clipboard.js"></script>
+<script src="../_/js/site.js"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
