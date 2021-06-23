@@ -2,6 +2,23 @@
 ** xref:01-setup.adoc#prerequisite[Prerequisites]
 ** xref:01-setup.adoc#minikube[Setup Minikube]
 
-* xref:02-deploy.adoc[2. Deploy Service]
-** xref:02-deploy.adoc#package[Build Service]
-** xref:02-deploy.adoc#deploy[Deploy Dervice]
+* xref:02-create.adoc[2. Create Application]
+** xref:02-deploy.adoc#startspringboot[Skaffold Sping Boot App.]
+** xref:02-deploy.adoc#buildrun[Build & Run]
+
+* xref:03-kubernetes.adoc[3. Kubernetize Application]
+** xref:03-kubernetes.adoc#jkube[JKube]
+*** xref:03-kubernetes.adoc#create[Create Container]
+*** xref:03-kubernetes.adoc#deploy[Deploy Container]
+
+* xref:04-actuators.adoc[4. Spring Boot Actuator]
+** xref:04-actuators.adoc#heatlhcheck[Health Check Actuator]
+** xref:04-actuators.adoc#metrics[Metrics]
+
+* xref:05-resiliency.adoc[5. Resiliency]
+** xref:05-resiliency.adoc#restclient[Rest Client]
+** xref:05-resiliency.adoc#resiliency[Resiliency]
+*** xref:05-resiliency.adoc#timeout[Timeout]
+*** xref:05-resiliency.adoc#fallback[Fallback]
+*** xref:05-resiliency.adoc#circuitbreaker[Circuit Breaker]
+*** xref:05-resiliency.adoc#retry[Retry]

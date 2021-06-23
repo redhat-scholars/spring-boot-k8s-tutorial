@@ -1,0 +1,74 @@
+= Create a Spring Boot application
+include::_attributes.adoc[]
+
+[#startspringboot]
+== Skaffold a Spring Boot
+
+The first thing we need is a Spring Boot application.
+To skaffold it, we use the Spring Initilizr web page located at https://start.spring.io/.
+
+In the page, fill the form with the values shown in <<start-spring>>, keeping an eye to add Spring Web, Resilience4J and Spring Boot Actuator.  
+
+[id=start-spring]
+.Spring Initializr
+image::start-spring.png[]
+
+Push the `Generate` button which will download the source code.
+
+Unzip the downloaded file and open the project in your favourite IDE:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+unzip hello-kubernetes.zip
+cd hello-kubernetes
+----
+
+In your IDE, create a new class named `HelloController` in `org.acme.hellokubernetes` package:
+
+[.console-input]
+[source, java,subs="+macros,+attributes"]
+----
+package org.acme.hellokubernetes;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloController {
+    
+    @GetMapping("/hello")
+    String hello() {
+      return "Hello World";
+    }
+
+}
+----
+
+[#buildrun]
+== Build and Run
+
+We can build the project and run it:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+./mvnw package -DskipTests
+
+java -jar target/hello-kubernetes-0.0.1-SNAPSHOT.jar
+----
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+curl localhost:8080/hello
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+Hello World
+----
+
+So far, nothing new, we've skafolded a simple Spring Boot Rest API.
+In the following section, we'll start looking at how to "Kubernetize" a Spring Boot application.

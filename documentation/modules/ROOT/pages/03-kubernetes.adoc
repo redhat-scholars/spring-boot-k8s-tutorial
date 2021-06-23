@@ -1,0 +1,260 @@
+= Kubernetize a Spring Boot application
+include::_attributes.adoc[]
+
+[#jkube]
+== JKube
+
+Spring Boot project offers several options out-of-the-box for containerizing an application.
+All of them, might fit your requirements but they just cover one part of the equation, that is creating a continer, but it isn't implements the creation of the Kubernetes resources nor the deployment of them.
+
+https://www.eclipse.org/jkube/[Eclipse JKube] is a collection of plugins and libraries that are used for building container images using Docker, JIB or S2I build strategies. Eclipse JKube generates and deploys Kubernetes/OpenShift manifests at compile time too.
+
+Open `pom.xml` file and add the following properties at `<properties>` section:
+
+[.console-input]
+[source, xml,subs="+macros,+attributes"]
+.pom.xml
+----
+<jkube.build.strategy>jib</jkube.build.strategy>
+<jkube.generator.name>quay.io/lordofthejars/sb-hw:${project.version}</jkube.generator.name>
+----
+
+IMPORTANT: Substitute `quay.io` for your container registry and `lordofthejars` with your username.
+
+Then add the `jkube` plugin at `plugins` section just after the `spring-boot-maven-plugin` plugin:
+
+[.console-input]
+[source, xml,subs="+macros,+attributes"]
+.pom.xml
+----
+<plugin>
+	<groupId>org.eclipse.jkube</groupId>
+	<artifactId>kubernetes-maven-plugin</artifactId>
+	<version>1.2.0</version>
+</plugin>
+----
+
+Login into container registry running:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+docker login quay.io
+----
+
+TIP: You can set username/password in the jkube project, but if not then `docker login` session is used.
+
+[#create]
+=== Building & Pushing
+
+To build the Linux container image and push it to container registry run the following Maven goals:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+./mvnw compile k8s:build k8s:push
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+[INFO] k8s: Running in Kubernetes mode
+[INFO] k8s: Building Docker image in Kubernetes mode
+[INFO] k8s: Running generator spring-boot
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java-binary-s2i:0.0.9 as base / builder
+[INFO] k8s: JIB image build started
+JIB> Base image 'quay.io/jkube/jkube-java-binary-s2i:0.0.9' does not use a specific image digest - build may not be reproducible
+JIB> Containerizing application with the following files:
+JIB> 	:
+JIB> 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/Dockerfile
+JIB> 	:
+JIB> 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/deployments
+JIB> 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/deployments/hello-kubernetes-0.0.1-SNAPSHOT.jar
+JIB> Getting manifest for base image quay.io/jkube/jkube-java-binary-s2i:0.0.9...
+JIB> Building  layer...
+JIB> Building  layer...
+JIB> Using base image with digest: sha256:dd5c9f44a86e19438662d293e180acc8d864887cf19c165c1b24ae703b16c2d4
+JIB> Container program arguments set to [/usr/local/s2i/run] (inherited from base image)
+JIB> Building image to tar file...
+JIB> [========================      ] 80.0% complete > writing to tar file
+JIB> [==============================] 100.0% complete
+[INFO] k8s:  /Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/tmp/docker-build.tar successfully built
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+----
+
+[#deploy]
+=== Kubernetes Resources
+
+JKube can generate an opinionated Kubernetes resources file for a Spring Boot application setting the image name generated in the previous step:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+./mvnw compile k8s:resource
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+[INFO] --- kubernetes-maven-plugin:1.2.0:resource (default-cli) @ hello-kubernetes ---
+[WARNING] k8s: Cannot access cluster for detecting mode: Unknown host kubernetes.default.svc: nodename nor servname provided, or not known
+[INFO] k8s: Running generator spring-boot
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java-binary-s2i:0.0.9 as base / builder
+[INFO] k8s: Using resource templates from /Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/src/main/jkube // <1>
+[INFO] k8s: jkube-controller: Adding a default Deployment
+[INFO] k8s: jkube-service: Adding a default service 'hello-kubernetes' with ports [8080] // <2>
+[INFO] k8s: jkube-healthcheck-spring-boot: Adding readiness probe on port 8080, path='/actuator/health', scheme='HTTP', with initial delay 10 seconds // <3>
+[INFO] k8s: jkube-healthcheck-spring-boot: Adding liveness probe on port 8080, path='/actuator/health', scheme='HTTP', with initial delay 180 seconds
+[INFO] k8s: jkube-service-discovery: Using first mentioned service port '8080'
+[INFO] k8s: jkube-revision-history: Adding revision history limit to 2
+[INFO] ------------------------------------------------------------------------
+----
+<1> Customizations can be placed in this directory.
+<2> Port is taken from Spring Boot configuration.
+<3> Since health actuator is registered liveness/readiness probes are set. More about this later.
+
+The generated Kubernetes file is located at `arget/classes/META-INF/jkube` directory:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+cat target/classes/META-INF/jkube/kubernetes.yml
+----
+
+[.console-output]
+[source,yml,subs="+macros,+attributes"]
+----
+---
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      jkube.io/git-url: git@github.com:lordofthejars/spring-boot-k8s-tutorial.git
+      jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
+      jkube.io/git-branch: master
+      jkube.io/scm-url: https://github.com/spring-projects/spring-boot/hello-kubernetes
+      jkube.io/scm-tag: HEAD
+      prometheus.io/path: /metrics
+      prometheus.io/port: "9779"
+      prometheus.io/scrape: "true"
+    labels:
+      expose: "true"
+      app: hello-kubernetes
+      provider: jkube
+      version: 0.0.1-SNAPSHOT
+      group: org.acme
+    name: hello-kubernetes
+  spec:
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: hello-kubernetes
+      provider: jkube
+      group: org.acme
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      jkube.io/git-url: git@github.com:lordofthejars/spring-boot-k8s-tutorial.git
+      jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
+      jkube.io/git-branch: master
+      jkube.io/scm-url: https://github.com/spring-projects/spring-boot/hello-kubernetes
+      jkube.io/scm-tag: HEAD
+    labels:
+      app: hello-kubernetes
+      provider: jkube
+      version: 0.0.1-SNAPSHOT
+      group: org.acme
+    name: hello-kubernetes
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 2
+    selector:
+      matchLabels:
+        app: hello-kubernetes
+        provider: jkube
+        group: org.acme
+    template:
+      metadata:
+        annotations:
+          jkube.io/scm-url: https://github.com/spring-projects/spring-boot/hello-kubernetes
+          jkube.io/git-url: git@github.com:lordofthejars/spring-boot-k8s-tutorial.git
+          jkube.io/scm-tag: HEAD
+          jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
+          jkube.io/git-branch: master
+        labels:
+          app: hello-kubernetes
+          provider: jkube
+          version: 0.0.1-SNAPSHOT
+          group: org.acme
+      spec:
+        containers:
+        - env:
+          - name: KUBERNETES_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: quay.io/lordofthejars/sb-hw:0.0.1-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 180
+            successThreshold: 1
+          name: spring-boot
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          - containerPort: 9779
+            name: prometheus
+            protocol: TCP
+          - containerPort: 8778
+            name: jolokia
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            successThreshold: 1
+          securityContext:
+            privileged: false
+----
+
+=== Kubernetes Deploy
+
+The last step is to deploy the application to the Kubernetes cluster.
+We can deploy application using `kubectl` CLI tool:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+kubectl apply -f target/classes/META-INF/jkube/kubernetes.yml
+----
+
+Or we use `k8s:apply` goal.
+This goal takes the resources created with `k8s:resource` goal :
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+./mvnw k8s:apply
+----

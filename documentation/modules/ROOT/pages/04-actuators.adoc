@@ -1,0 +1,301 @@
+= Spring Boot Actuators
+include::_attributes.adoc[]
+
+Spring Boot includes a number of additional features in the form of actuators.
+Some of these featuresbare health checks, tracing or monitoring. 
+Let's explore some of them:
+
+[#heatlhcheck]
+== Health Check Actuator
+
+When we created the project, we already set the actuator dependencies, so we don't need to register them in the `pom.xml`.
+
+By default some `HealthIndicators` are registerd to report the state of the application.
+Some of them are generic and others are specific to a technology. To mention a few:
+
+* DiskSpaceHealthIndicator
+* PingHealthIndicator
+* DataSourceHealthIndicator (if datasource is used)
+* MongoHealthIndicator (if MongoDB is used)
+
+Sending a request to `/actuator/health` endpoint returns an agrgegated result of all registered health indicators.
+
+include::partial$package_run.adoc[]
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+curl http://localhost:8080/actuator/health
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+{"status":"UP"}
+----
+
+=== Custom Health Indicator
+
+A custom health check indicator may be implemented implementing `org.springframework.boot.actuate.health.HealthIndicator` interface.
+Create a new class named `LuckyHealthIndicator`.
+
+[.console-input]
+[source, java,subs="+macros,+attributes"]
+----
+package org.acme.hellokubernetes;
+
+import java.time.LocalTime;
+
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.stereotype.Component;
+
+@Component("lucky")
+public class LuckyHealthIndicator implements HealthIndicator {
+
+    @Override
+    public Health health() {
+        final LocalTime currentTime = LocalTime.now();
+        final Health.Builder healthBuilder = currentTime.getMinute() % 2 == 0 ? 
+                                Health.up() 
+                                : 
+                                Health.down().withDetail("time", currentTime);
+        
+        return healthBuilder.build();
+    }
+
+}
+----
+
+include::partial$package_run.adoc[]
+
+Now depending on the minute you do the request, you may receive an `UP` or `DOWN` as a result:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+curl http://localhost:8080/actuator/health -vv
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+< HTTP/1.1 200
+< Content-Type: application/vnd.spring-boot.actuator.v3+json
+< Transfer-Encoding: chunked
+< Date: Thu, 20 May 2021 11:38:32 GMT
+{"status":"DOWN"}
+----
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+curl http://localhost:8080/actuator/health -vv
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+< HTTP/1.1 503
+< Content-Type: application/vnd.spring-boot.actuator.v3+json
+< Transfer-Encoding: chunked
+< Date: Thu, 20 May 2021 11:39:04 GMT
+{"status":"UP"}
+----
+
+=== Custom Configuration
+
+There is a special health check configuration parameter that adds details to health check response.
+Open `src/main/resources/application.properties` file and add the following property:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+.application.properties
+----
+management.endpoint.health.show-details=always
+----
+
+include::partial$package_run.adoc[]
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+curl http://localhost:8080/actuator/health
+----
+
+The output contains some details about all registered health indicators:
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+{"status":"UP","components":{"discoveryComposite":{"description":"Discovery Client not initialized","status":"UNKNOWN","components":{"discoveryClient":{"description":"Discovery Client not initialized","status":"UNKNOWN"}}},"diskSpace":{"status":"UP","details":{"total":500068036608,"free":77511536640,"threshold":10485760,"exists":true}},"lucky":{"status":"UP"},"ping":{"status":"UP"},"refreshScope":{"status":"UP"}}}
+----
+
+Also, it's possible to get the status of specific health indicator sending request to `/actuator/health/{name}`, where `name` is the prefix part of the health indicator class name.
+For example, in the case of `LuckyHealthIndicator`, the name of the health indicator is `lucky`.
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+curl http://localhost:8080/actuator/health/lucky
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+{"status":"DOWN","details":{"time":"13:39:04.458205"}}
+----
+
+IMPORTANT: Finally delete the `LuckyHealthIndicator.java` file to not affect the readiness of the application when deployed in the Kubernetes cluster.
+
+[#metrics]
+== Metrics Actuator
+
+Spring Boot Actuator provides support for https://micrometer.io/[Micrometer] project to provide application metrics.
+
+=== Prometheus
+
+Micrometer supports several monitoring systems such as Prometheus, Elastic, Dynatrace, ...
+For this tutorial, we are going to use Prometheus as a metrics format.
+
+The first thing to do is registering the `io.micrometer:micrometer-registry-prometheus` dependency:
+
+[.console-input]
+[source, xml,subs="+macros,+attributes"]
+.pom.xml
+----
+<dependency>
+	<groupId>io.micrometer</groupId>
+	<artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+----
+
+Then, we need to update the `application.properties` to expose metrics endpoints (in fact since we are going to need more endpoints in the course of this tutorial):
+
+[.console-input]
+[source, properties,subs="+macros,+attributes"]
+.application.properties
+----
+management.endpoints.web.exposure.include=*
+----
+
+include::partial$package_run.adoc[]
+
+Now, two new endpoints related to monitoring are available:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+curl http://localhost:8080/actuator/metrics
+----
+
+Sends the current monitoring parameters:
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+{"names":["http.server.requests","jvm.buffer.count","jvm.buffer.memory.used","jvm.buffer.total.capacity","jvm.classes.loaded","jvm.classes.unloaded","jvm.gc.live.data.size","jvm.gc.max.data.size","jvm.gc.memory.allocated","jvm.gc.memory.promoted","jvm.gc.pause","jvm.memory.committed","jvm.memory.max","jvm.memory.used","jvm.threads.daemon","jvm.threads.live","jvm.threads.peak","jvm.threads.states","logback.events","process.cpu.usage","process.files.max","process.files.open","process.start.time","process.uptime","system.cpu.count","system.cpu.usage","system.load.average.1m","tomcat.sessions.active.current","tomcat.sessions.active.max","tomcat.sessions.alive.max","tomcat.sessions.created","tomcat.sessions.expired","tomcat.sessions.rejected"]
+----
+
+To consume the metrics, we use another endpoint:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+curl http://localhost:8080/actuator/prometheus
+----
+
+And the metrics output is in the Prometheus format:
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+# HELP process_cpu_usage The "recent cpu usage" for the Java Virtual Machine process
+# TYPE process_cpu_usage gauge
+process_cpu_usage 0.0
+# HELP tomcat_sessions_expired_sessions_total
+# TYPE tomcat_sessions_expired_sessions_total counter
+tomcat_sessions_expired_sessions_total 0.0
+# HELP process_uptime_seconds The uptime of the Java virtual machine
+# TYPE process_uptime_seconds gauge
+process_uptime_seconds 195.939
+....
+# HELP tomcat_sessions_active_max_sessions
+# TYPE tomcat_sessions_active_max_sessions gauge
+tomcat_sessions_active_max_sessions 0.0
+# HELP jvm_gc_live_data_size_bytes Size of long-lived heap memory pool after reclamation
+# TYPE jvm_gc_live_data_size_bytes gauge
+jvm_gc_live_data_size_bytes 0.0
+# HELP jvm_gc_memory_promoted_bytes_total Count of positive increases in the size of the old generation memory pool before GC to after GC
+# TYPE jvm_gc_memory_promoted_bytes_total counter
+jvm_gc_memory_promoted_bytes_total 2834944.0
+----
+
+=== Customizing Metrics
+
+We can create custom metrics injecting `io.micrometer.core.instrument.MeterRegistry` in the constructor and registering the metric.
+
+Open `HelloController` class and add the following content:
+
+[.console-input]
+[source, java,subs="+macros,+attributes"]
+----
+package org.acme.hellokubernetes;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+
+@RestController
+public class HelloController {
+    
+    private Set<String> names = new HashSet<>();
+
+    public HelloController(MeterRegistry registry) { // <1>
+      registry.gaugeCollectionSize("names.size", Tags.empty(), names); // <2>
+    }
+
+    @GetMapping("/hello")
+    String hello() {
+      return "Hello World";
+    }
+
+    @GetMapping("/hello/{name}")
+    String helloWithName(@PathVariable("name") String name) {
+      names.add(name); // <3>
+      return "Hello World " + name;
+    }
+
+}
+----
+<1> Injects `MeterRegistry`
+<2> Registers a new gauge counting the number of elements inserted at `names` collection
+<3> Adds the given name to the collection
+
+include::partial$package_run.adoc[]
+
+Then make a request to `/hello/Alex` and then get the metrics (optionally filtering by `names.size` key used to register the gauge):
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+curl localhost:8080/hello/Alex
+
+curl http://localhost:8080/actuator/prometheus | grep names.size
+----
+
+And metric is updated.
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+# HELP names_size
+# TYPE names_size gauge
+names_size 1.0
+----

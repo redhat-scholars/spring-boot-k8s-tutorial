@@ -1,0 +1,28 @@
+To deploy the service to Kubernetes run the following command in a new terminal window:
+
+[.console-input]
+[source,bash, subs="+macros,+attributes"]
+----
+kubectl create deployment externalservice --image={containername}
+----
+
+[.console-input]
+[source,bash, subs="+macros,+attributes"]
+----
+kubectl get pods
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+NAME                    READY   STATUS    RESTARTS   AGE
+externalservice-jd6jk   1/1     Running   0          18s
+----
+
+Then port forward the service so it's accessible from localhost.
+
+[.console-input]
+[source,bash, subs="+macros,+attributes"]
+----
+kubectl port-forward -n default externalservice-jd6jk  8090:8080
+----
