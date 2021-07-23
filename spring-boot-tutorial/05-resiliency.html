@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Spring Cloud Circuit Breaker :: Spring Boot &amp; Kubernetes</title>
+    <link rel="canonical" href="https://github.com/redhat-scholars/spring-boot-k8s-tutorial/spring-boot-tutorial/05-resiliency.html">
+    <link rel="prev" href="04-actuators.html">
+    <link rel="next" href="06-configuration.html">
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../_/css/site.css">
+<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" href="https://github.com/redhat-scholars/spring-boot-k8s-tutorial">Spring Boot &amp; Kubernetes</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#">Books</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">CheatSheets</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">CheatSheet A</a>
+            <a class="navbar-item" href="#">CheatSheet B</a>
+            <a class="navbar-item" href="#">CheatSheet C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Upcoming Events</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Event A</a>
+            <a class="navbar-item" href="#">Event B</a>
+            <a class="navbar-item" href="#">Event C</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#">Tutorial A</a>
+            <a class="navbar-item" href="#">Tutorial B</a>
+            <a class="navbar-item" href="#">Tutorial C</a>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="#">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="spring-boot-tutorial" data-version="master">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Spring Boot &amp; Kubernetes</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="01-setup.html">1. Setup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup.html#prerequisite">Prerequisites</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup.html#minikube">Setup Minikube</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="02-create.html">2. Create Application</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#02-deploy.adoc#startspringboot">Skaffold Sping Boot App.</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#02-deploy.adoc#buildrun">Build &amp; Run</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-kubernetes.html">3. Kubernetize Application</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-kubernetes.html#jkube">JKube</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-kubernetes.html#create">Create Container</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-kubernetes.html#deploy">Deploy Container</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="04-actuators.html">4. Spring Boot Actuator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-actuators.html#heatlhcheck">Health Check Actuator</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-actuators.html#metrics">Metrics</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="05-resiliency.html">5. Resiliency</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#restclient">Rest Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="#resiliency">Resiliency</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#timeout">Timeout</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#fallback">Fallback</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#circuitbreaker">Circuit Breaker</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#retry">Retry</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#cleanup">Clean up</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="06-configuration.html">6. Configuration</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="06-configuration.html#sckconfig">Spring Cloud Kubernetes Config</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="06-configuration.html#registering">Adding Dependency</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="06-configuration.html#code">Developing Code</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="06-configuration.html#configuration">Configuring the Application</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="06-configuration.html#deploying">Deploying the Application</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-configuration.html#cleanup">Clean up</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Spring Boot &amp; Kubernetes</span>
+    <span class="version">master</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Spring Boot & Kubernetes</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">master</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Spring Boot & Kubernetes</a></li>
+    <li><a href="05-resiliency.html">5. Resiliency</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/redhat-scholars/spring-boot-k8s-tutorial/edit/master/documentation/modules/ROOT/pages/05-resiliency.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Spring Cloud Circuit Breaker</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring Boot integrates with <a href="http://resilience4j.readme.io/">Resilience4J</a> project to implement <a href="http://martinfowler.com/bliki/CircuitBreaker.html">Circuit Breaker pattern</a>.</p>
+</div>
+<div class="paragraph">
+<p>When we created the project, we already set the circuit breaker dependencies, so we don&#8217;t need to register it in the <code>pom.xml</code>.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s modify the previous application so the hello message is retrieved from an external service.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="restclient"><a class="anchor" href="#restclient"></a>Rest Client</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We need to implement a Rest client to request the message to the external service.
+In this case, <code>RestTemplate</code> approach is used, but you&#8217;ll see that any other approach works in a similar way from the point of view resiliency.</p>
+</div>
+<div class="paragraph">
+<p>Create a new class named <code>MessageService</code> with the followign content:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">org.acme.hellokubernetes.MessageService.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.acme.hellokubernetes;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+@Service
+public class MessageService {
+
+    public String getMessage() {
+        System.out.println("Get Message Remote call");
+
+        final RestTemplate messageServiceGateway = new RestTemplate();
+        return messageServiceGateway.getForEntity("http://localhost:8090", String.class).getBody();
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And add the following lines at the <code>HelloController.java</code> class to use the previous class to make requests to an external service:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">org.acme.hellokubernetes.HelloController.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Autowired
+MessageService messageService;
+
+@GetMapping("/hello")
+String hello() {
+    return "This is Spring calling a " + messageService.getMessage();
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_deploy_external_service"><a class="anchor" href="#_deploy_external_service"></a>Deploy External Service</h3>
+<div class="paragraph">
+<p>Let&#8217;s deploy the external service to our Kubernetes cluster and expose the service so it&#8217;s accessible from localhost.
+This service returns a message when we query the default path.
+One of the important aspect of this service is a sleep call of three seconds, so every time we send a request to the service, it takes three seconds to return the response.</p>
+</div>
+<div class="paragraph">
+<p>To deploy the service to Kubernetes run the following command in a new terminal window:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create deployment externalservice --image=quay.io/rhdevelopers/istio-tutorial-recommendation:v2.2-timeout</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                    READY   STATUS    RESTARTS   AGE
+externalservice-jd6jk   1/1     Running   0          18s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then port forward the service so it&#8217;s accessible from localhost.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl port-forward -n default externalservice-jd6jk  8090:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_access_the_service"><a class="anchor" href="#_access_the_service"></a>Access the Service</h3>
+<div class="paragraph">
+<p>Let&#8217;s deploy the Spring Boot application:</p>
+</div>
+<div class="paragraph">
+<p>Unresolved include directive in modules/ROOT/pages/05-resiliency.adoc - include::partial$package_run.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Then curl the service, the response is sent back after 3 seconds:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://localhost:8080/hello" class="bare">http://localhost:8080/hello</a></code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">This is Spring calling a recommendation v2 from 'd58cdc29c05f': 4</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="resiliency"><a class="anchor" href="#resiliency"></a>Resiliency</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are several resilience strategies to follow, but the most used are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>timeout</p>
+</li>
+<li>
+<p>circuit breaker</p>
+</li>
+<li>
+<p>retries</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="timeout"><a class="anchor" href="#timeout"></a>Timeout</h3>
+<div class="paragraph">
+<p>We&#8217;ve seen that the external service takes three seconds to produce a response.
+Usually when we&#8217;re designing an application, if an external communication takes more than one second, then a timeout error should be rised.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s configure Spring Boot to start using resiliency4j and add a timeout to the code that is accessing the external service.</p>
+</div>
+<div class="paragraph">
+<p>Open <code>HelloKubernetesApplication.java</code> file and add the following method to configure resiliency4J factory to use timeout strategy configured in one second .</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">org.acme.hellokubernetes.HelloKubernetesApplication.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.acme.hellokubernetes;
+
+import java.time.Duration;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JConfigBuilder;
+import org.springframework.cloud.client.circuitbreaker.Customizer;
+import org.springframework.context.annotation.Bean;
+
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.timelimiter.TimeLimiterConfig;
+
+@SpringBootApplication
+public class HelloKubernetesApplication {
+
+	@Bean
+	public Customizer&lt;Resilience4JCircuitBreakerFactory&gt; defaultCustomizer() { <i class="conum" data-value="1"></i><b>(1)</b>
+    return factory -&gt; factory.configureDefault(id -&gt; new Resilience4JConfigBuilder(id)
+            .timeLimiterConfig(TimeLimiterConfig.custom().timeoutDuration(Duration.ofSeconds(1)).build()) <i class="conum" data-value="2"></i><b>(2)</b>
+        );
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(HelloKubernetesApplication.class, args);
+	}
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Creates a default circuit breaker factory.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Configures timeout to one second.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Then we need to wrap the code where circuit breaker must be applied.
+Open <code>HelloController.java</code> and wrap the <code>hello()</code> method:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">org.acme.hellokubernetes.HelloController.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.acme.hellokubernetes;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+
+@RestController
+public class HelloController {
+
+    private CircuitBreaker messageCircuitBreaker; <i class="conum" data-value="1"></i><b>(1)</b>
+
+    private Set&lt;String&gt; names = new HashSet&lt;&gt;();
+
+    public HelloController(MeterRegistry registry, CircuitBreakerFactory messageCircuitBreakerFactory) { <i class="conum" data-value="2"></i><b>(2)</b>
+      this.messageCircuitBreaker = messageCircuitBreakerFactory.create("message"); <i class="conum" data-value="3"></i><b>(3)</b>
+      registry.gaugeCollectionSize("names.size", Tags.empty(), names);
+    }
+
+    @Autowired
+    MessageService messageService;
+
+    @GetMapping("/hello")
+    String hello() {
+      return this.messageCircuitBreaker.run) -&gt; <i class="conum" data-value="4"></i><b>(4)</b>           "This is Spring calling a " + messageService.getMessage(;
+    }
+
+    @GetMapping("/hello/{name}")
+    String helloWithName(@PathVariable("name") String name) {
+      names.add(name);
+      return "Hello World " + name;
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Circuit breaker instance.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Pass the <code>CircuitBreakerFactory</code> instance.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Creates a circuit breaker instance for the message service.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Wrap the call.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s deploy the Spring Boot application:</p>
+</div>
+<div class="paragraph">
+<p>Unresolved include directive in modules/ROOT/pages/05-resiliency.adoc - include::partial$package_run.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Then curl the service, the response is sent back after 1 second with an exception:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl <a href="http://localhost:8080/hello" class="bare">http://localhost:8080/hello</a></code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"timestamp":"2021-05-31T14:23:09.929+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And if we check the Spring Boot logs, the timeout exception is thrown instead of the message:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">java.util.concurrent.TimeoutException: TimeLimiter 'message' recorded a timeout exception.
+	at io.github.resilience4j.timelimiter.TimeLimiter.createdTimeoutExceptionWithName(TimeLimiter.java:221) ~[resilience4j-timelimiter-1.7.0.jar:1.7.0]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fallback"><a class="anchor" href="#fallback"></a>Fallback</h3>
+<div class="paragraph">
+<p>Sometimes we can provide some fallback method in case of an error, this fallback method could be a default value or a call to another system to try to get a valid value (ie distributed cache is down then the fallback may try to get the value from the  database).</p>
+</div>
+<div class="paragraph">
+<p>To provide a fallback <code>run</code> method provides an overload version of the method to set the fallback method:</p>
+</div>
+<div class="paragraph">
+<p>Open <code>HelloController.java</code> file and change <code>hello()</code> method:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">org.acme.hellokubernetes.HelloController.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@GetMapping("/hello")
+String hello() {
+    return this.messageCircuitBreaker.run(() -&gt;
+        "This is Spring calling a " + messageService.getMessage()
+        , throwable -&gt; "Default" <i class="conum" data-value="1"></i><b>(1)</b>
+    );
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Fallback method. In this case a static value is provided.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s deploy the Spring Boot application:</p>
+</div>
+<div class="paragraph">
+<p>Unresolved include directive in modules/ROOT/pages/05-resiliency.adoc - include::partial$package_run.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Then access the endpoint:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/hello</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output is the value provided in the fallback part.</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Default</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="circuitbreaker"><a class="anchor" href="#circuitbreaker"></a>Circuit Breaker</h3>
+<div class="paragraph">
+<p>We can also use <a href="http://martinfowler.com/bliki/CircuitBreaker.html">Circuit Breaker pattern</a> in resiliency4j as a resiliency strategy.</p>
+</div>
+<div class="paragraph">
+<p>To make the <code>RestTemplate</code> fail, let&#8217;s stop the external service by stopping the <code>port-forward</code> process.
+Move to the terminal where <code>kubectl port-forward</code> was run and push <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>C</kbd></span> to stop it.</p>
+</div>
+<div class="paragraph">
+<p>Open <code>HelloKubernetesApplication.java</code> file and configure circuit breaker:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">org.acme.hellokubernetes.HelloKubernetesApplication.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.acme.hellokubernetes;
+
+import java.time.Duration;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JConfigBuilder;
+import org.springframework.cloud.client.circuitbreaker.Customizer;
+import org.springframework.context.annotation.Bean;
+
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.timelimiter.TimeLimiterConfig;
+
+@SpringBootApplication
+public class HelloKubernetesApplication {
+
+	@Bean
+	public Customizer&lt;Resilience4JCircuitBreakerFactory&gt; defaultCustomizer() {
+    return factory -&gt; factory.configureDefault(id -&gt; new Resilience4JConfigBuilder(id)
+            .circuitBreakerConfig(CircuitBreakerConfig.custom() <i class="conum" data-value="1"></i><b>(1)</b>
+                                    .failureRateThreshold(50) <i class="conum" data-value="2"></i><b>(2)</b>
+                                    .ringBufferSizeInClosedState(5) <i class="conum" data-value="3"></i><b>(3)</b>
+                                    .build()
+                                )
+            .build());
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(HelloKubernetesApplication.class, args);
+	}
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Configures Circuit breaker.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Rate threshold to 50% of calls.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Configures the size of the sliding window.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s deploy the Spring Boot application:</p>
+</div>
+<div class="paragraph">
+<p>Unresolved include directive in modules/ROOT/pages/05-resiliency.adoc - include::partial$package_run.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>And run the following command in a terminal:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">for i in {1..10}; do
+curl localhost:8080/hello
+done</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output is obviously 10 errors:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">{"timestamp":"2021-06-01T08:48:59.417+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}{"timestamp":"2021-06-01T08:48:59.435+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}{"timestamp":"2021-06-01T08:48:59.448+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}{"timestamp":"2021-06-01T08:48:59.468+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}{"timestamp":"2021-06-01T08:48:59.479+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}{"timestamp":"2021-06-01T08:48:59.491+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}{"timestamp":"2021-06-01T08:48:59.504+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}{"timestamp":"2021-06-01T08:48:59.515+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}{"timestamp":"2021-06-01T08:48:59.527+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}{"timestamp":"2021-06-01T08:48:59.539+00:00","status":500,"error":"Internal Server Error","message":"","path":"/hello"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But if we check the Spring Boot logs, we&#8217;ll see that first <code>java.net.ConnectException: Connection refused</code> exteption is thrown and then <code>CallNotPermittedException</code> exception is thrown as the circuit is open and the real call isn&#8217;t executed:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Get Message Remote call <i class="conum" data-value="1"></i><b>(1)</b>
+exception org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://localhost:8090": Connection refused; nested exception is java.net.ConnectException: Connection refused
+...
+<i class="conum" data-value="2"></i><b>(2)</b>
+exception io.github.resilience4j.circuitbreaker.CallNotPermittedException: CircuitBreaker 'message' is OPEN and does not permit further calls</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The message is printed as the real logic is executed.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>No message as circuit is open and <code>MessageService</code> method isn&#8217;t called.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="retry"><a class="anchor" href="#retry"></a>Retry</h3>
+<div class="paragraph">
+<p>Another strategy used for resiliency is automatic retries in case of an error is reported.
+Spring Boot relies on Spring Retry and Spring Aspects projects for automatic retries.</p>
+</div>
+<div class="paragraph">
+<p>Open <code>pom.xml</code> file and register the following dependencies:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.retry&lt;/groupId&gt;
+	&lt;artifactId&gt;spring-retry&lt;/artifactId&gt;
+	&lt;version&gt;1.3.1&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+	&lt;groupId&gt;org.springframework&lt;/groupId&gt;
+	&lt;artifactId&gt;spring-aspects&lt;/artifactId&gt;
+	&lt;version&gt;5.3.7&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To enable retries, annotate the <code>HelloKubernetesApplication.java</code> wfile with <code>@EnableRetry</code> annotation:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">org.acme.hellokubernetes.HelloKubernetesApplication.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@org.springframework.retry.annotation.EnableRetry
+@SpringBootApplication</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The final step is to annotate the retryable method with <code>@Retryable</code> annotation:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">org.acme.hellokubernetes.HelloController.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.acme.hellokubernetes;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+
+@RestController
+public class HelloController {
+
+    private CircuitBreaker messageCircuitBreaker;
+
+    private Set&lt;String&gt; names = new HashSet&lt;&gt;();
+
+    public HelloController(MeterRegistry registry, CircuitBreakerFactory messageCircuitBreakerFactory) {
+      this.messageCircuitBreaker = messageCircuitBreakerFactory.create("message");
+      registry.gaugeCollectionSize("names.size", Tags.empty(), names);
+    }
+
+    @Autowired
+    MessageService messageService;
+
+    @GetMapping("/hello")
+    String hello() {
+      return this.messageCircuitBreaker.run) -&gt;           "This is Spring calling a " + messageService.getMessage(;
+    }
+
+    @GetMapping("/hello/{name}")
+    String helloWithName(@PathVariable("name") String name) {
+      names.add(name);
+      return "Hello World " + name;
+    }
+
+    @GetMapping("/hello/error")
+    @Retryable(maxAttempts = 4, <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
+                backoff = @Backoff(delay = 1000)) <i class="conum" data-value="3"></i><b>(3)</b>
+    String helloWithException() {
+      System.out.println("Method with error");
+      throw new IllegalArgumentException("Error");
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Annotates the method with <code>@Retryable</code> annotation.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Executes four retries.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>With an sleep of 1 second between retries.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s deploy the Spring Boot application:</p>
+</div>
+<div class="paragraph">
+<p>Unresolved include directive in modules/ROOT/pages/05-resiliency.adoc - include::partial$package_run.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Then access the created endpoint:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/hello/error</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Before the error is returned, there is an sleep of 4 seconds (1 second for each retry).</p>
+</div>
+<div class="paragraph">
+<p>But if we check the Spring Boot logs, we&#8217;ll see that <code>Method with error</code> is printed four times, one for each retry.</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Method with error
+Method with error
+Method with error
+Method with error
+
+
+java.lang.IllegalArgumentException: Error</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cleanup"><a class="anchor" href="#cleanup"></a>Clean-Up</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Before stepping to the following section, stop the <code>kubectl port-forward</code> process by typing <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>C</kbd></span> on the terminal.</p>
+</div>
+<div class="paragraph">
+<p>Undeploy the service by deleteing all the resources created in the namespace:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete all --all -n default</code></pre>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="04-actuators.html">4. Spring Boot Actuator</a></span>
+  <span class="next"><a href="06-configuration.html">6. Configuration</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../_/js/vendor/clipboard.js"></script>
+<script src="../_/js/site.js"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
