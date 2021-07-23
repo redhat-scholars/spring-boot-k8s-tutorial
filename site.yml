@@ -3,7 +3,7 @@ runtime:
 
 site:
   title: Spring Boot & Kubernetes
-  url: https://redhat-scholars.github.io/course-template
+  url: https://github.com/redhat-scholars/spring-boot-k8s-tutorial
   start_page: template-tutorial::index.adoc
 
 content:
