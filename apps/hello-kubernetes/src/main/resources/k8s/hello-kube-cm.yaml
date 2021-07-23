@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: hello-kubernetes # <1>
 data:
-  greeting.message: Aloha
+  application.properties: |-
+    greeting.message: Aloha

@@ -4,9 +4,9 @@ kind: RoleBinding
 metadata:
   name: spring-boot-view
 roleRef:
-  kind: ClusterRole
+  kind: Role
   apiGroup: rbac.authorization.k8s.io
-  name: view
+  name: spring-boot-view
 subjects:
   - kind: ServiceAccount
     name: spring-boot

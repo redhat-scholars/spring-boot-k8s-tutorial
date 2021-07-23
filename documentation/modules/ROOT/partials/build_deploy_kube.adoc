@@ -1,0 +1,44 @@
+Create and push the container image of the application:
+
+[.console-input]
+[source, bash]
+----
+./mvnw clean package k8s:build k8s:push -DskipTests
+----
+
+Generate the resources:
+
+[.console-input]
+[source, bash]
+----
+./mvnw k8s:resource
+----
+
+And finally deploy the application:
+
+[.console-input]
+[source, bash]
+----
+kubectl apply -f target/classes/META-INF/jkube/kubernetes.yml -n default
+----
+
+[.console-input]
+[source,bash, subs="+macros,+attributes"]
+----
+kubectl get pods
+----
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+NAME                    READY   STATUS    RESTARTS   AGE
+hello-kubernetes-96c8574d6-cnbsp   1/1     Running   0          18s
+----
+
+Then port forward the service so it's accessible from localhost.
+
+[.console-input]
+[source,bash, subs="+macros,+attributes"]
+----
+kubectl port-forward -n default hello-kubernetes-96c8574d6-cnbsp  8080:8080
+----

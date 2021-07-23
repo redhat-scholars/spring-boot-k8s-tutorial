@@ -22,3 +22,12 @@
 *** xref:05-resiliency.adoc#fallback[Fallback]
 *** xref:05-resiliency.adoc#circuitbreaker[Circuit Breaker]
 *** xref:05-resiliency.adoc#retry[Retry]
+** xref:05-resiliency.adoc#cleanup[Clean up]
+
+* xref:06-configuration.adoc[6. Configuration]
+** xref:06-configuration.adoc#sckconfig[Spring Cloud Kubernetes Config]
+*** xref:06-configuration.adoc#registering[Adding Dependency]
+*** xref:06-configuration.adoc#code[Developing Code]
+*** xref:06-configuration.adoc#configuration[Configuring the Application]
+*** xref:06-configuration.adoc#deploying[Deploying the Application]
+** xref:06-configuration.adoc#cleanup[Clean up]

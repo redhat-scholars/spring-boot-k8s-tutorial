@@ -480,3 +480,16 @@ Method with error
 
 java.lang.IllegalArgumentException: Error
 ----
+
+[#cleanup]
+== Clean-Up
+
+Before stepping to the following section, stop the `kubectl port-forward` process by typing kbd:[Ctrl+C] on the terminal.
+
+Undeploy the service by deleteing all the resources created in the namespace:
+
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+kubectl delete all --all -n default
+----

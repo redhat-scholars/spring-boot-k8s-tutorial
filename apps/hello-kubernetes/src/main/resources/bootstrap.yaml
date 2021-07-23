@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: hello-kubernetes
-  cloud:
-    kubernetes:
-      config:
-        namespace: default
-        sources:
-          - name: hello-kubernetes

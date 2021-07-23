@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "greeting")
 public class HelloConfig {
 
-    private String message = "Hello";
+    private String message;
 
     public String getMessage() {
         return message;
