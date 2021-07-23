@@ -1,5 +1,5 @@
-name: template-tutorial
-title: Template Tutorial
+name: spring-boot-tutorial
+title: Spring Boot & Kubernetes
 version: master
 nav:
   - modules/ROOT/nav.adoc

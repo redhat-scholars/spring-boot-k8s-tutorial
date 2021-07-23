@@ -4,7 +4,7 @@ runtime:
 site:
   title: Spring Boot & Kubernetes
   url: https://github.com/redhat-scholars/spring-boot-k8s-tutorial
-  start_page: template-tutorial::index.adoc
+  start_page: spring-boot-tutorial::index.adoc
 
 content:
   sources:
