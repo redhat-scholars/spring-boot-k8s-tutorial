@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Untitled :: Template Tutorial</title>
+    <title>Spring Cloud Kubernetes Config :: Spring Boot &amp; Kubernetes</title>
     <link rel="canonical" href="https://redhat-scholars.github.io/course-template/template-tutorial/06-configuration.html">
+    <link rel="prev" href="05-resiliency.html">
     <meta name="generator" content="Antora 2.3.4">
     <link rel="stylesheet" href="../_/css/site.css">
 <link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
@@ -16,7 +17,7 @@
     <div class="navbar-brand">
       <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
           src="../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
-      <a class="navbar-item" href="https://redhat-scholars.github.io/course-template">Template Tutorial</a>
+      <a class="navbar-item" href="https://redhat-scholars.github.io/course-template">Spring Boot &amp; Kubernetes</a>
       <button class="navbar-burger" data-target="topbar-nav">
         <span></span>
         <span></span>
@@ -148,6 +149,36 @@
   </li>
 </ul>
   </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="05-resiliency.html#cleanup">Clean up</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="06-configuration.html">6. Configuration</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="#sckconfig">Spring Cloud Kubernetes Config</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#registering">Adding Dependency</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#code">Developing Code</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#configuration">Configuring the Application</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="#deploying">Deploying the Application</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#cleanup">Clean up</a>
+  </li>
 </ul>
   </li>
 </ul>
@@ -179,12 +210,347 @@
 <button class="nav-toggle"></button>
   <a href="index.html" class="home-link"></a>
 <nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Template Tutorial</a></li>
+    <li><a href="06-configuration.html">6. Configuration</a></li>
+  </ul>
 </nav>
   <div class="edit-this-page"><a href="https://github.com/lordofthejars/spring-boot-k8s-tutorial/edit/master/documentation/modules/ROOT/pages/06-configuration.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <article class="doc">
+<h1 class="page">Spring Cloud Kubernetes Config</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring Boot integrates with <a href="https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/index.html">Spring Cloud Kubernetes</a> and Spring Cloud Kubernetes Config to make instances of <code>ConfigMaps</code> available at runtime to be injected as any other Spring Boot configuration property.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sckconfig"><a class="anchor" href="#sckconfig"></a>Spring Cloud Kubernetes Config</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="registering"><a class="anchor" href="#registering"></a>Registering</h3>
+<div class="paragraph">
+<p>Let&#8217;s register the Spring Cloud Kubernetes Config dependency in the build tool:</p>
+</div>
+<div class="paragraph">
+<p>Open <code>pom.xml</code> file and add the following dependency:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">pom.xml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+	&lt;artifactId&gt;spring-cloud-starter-kubernetes-fabric8-config&lt;/artifactId&gt;
+	&lt;version&gt;2.0.3&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="code"><a class="anchor" href="#code"></a>Code</h3>
+<div class="paragraph">
+<p>Then let&#8217;s create a Java class that reads Spring Boot config properties:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">org.acme.hellokubernetes.HelloConfig</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package org.acme.hellokubernetes;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration <i class="conum" data-value="1"></i><b>(1)</b>
+@ConfigurationProperties(prefix = "greeting") <i class="conum" data-value="2"></i><b>(2)</b>
+public class HelloConfig {
+
+    private String message; <i class="conum" data-value="3"></i><b>(3)</b>
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Sets this POJO as configuration class</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Sets the prefix of the properties (<code>greeting</code>)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Sets the property name (<code>message</code>)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>So any property value set in the <code>application.properties</code> with key <code>greeting.message</code> will be injected in the <code>message</code> field.</p>
+</div>
+<div class="paragraph">
+<p>Create a new endpoint in the <code>HelloController</code> class that uses this class:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">org.acme.hellokubernetes.HelloController.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Autowired
+private HelloConfig helloConfig;
+
+@GetMapping("/greeting/{name}")
+public String greeting(@PathVariable("name") String name) {
+    return helloConfig.getMessage() + " " + name;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configuration"><a class="anchor" href="#configuration"></a>Configuration</h3>
+<div class="paragraph">
+<p>But since we are in Kubernetes, instead of set this property in <code>application.properties</code>, let&#8217;s set it in a <code>ConfigMap</code>:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">src/main/resources/k8s/hello-kube.cm.yaml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hello-kubernetes <i class="conum" data-value="1"></i><b>(1)</b>
+data: <i class="conum" data-value="2"></i><b>(2)</b>
+  application.properties: |-
+    greeting.message: Aloha</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>ConfigMap</code> name should be the same as spring application name by default.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Creates an <code>application.properties</code> entry in the <code>ConfigMap</code> to be appended in <code>application.properties</code> set in the project.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Then we need to configure the Spring Cloud Kubernetes Config setting the name of <code>ConfigMaps</code> to load during bootstrap or the namespace where the <code>ConfigMaps</code> are placed:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">application.properties</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">spring.application.name=hello-kubernetes <i class="conum" data-value="1"></i><b>(1)</b>
+
+spring.cloud.kubernetes.config.name=hello-kubernetes <i class="conum" data-value="2"></i><b>(2)</b>
+spring.cloud.kubernetes.config.namespace=default <i class="conum" data-value="3"></i><b>(3)</b>
+spring.cloud.kubernetes.config.sources[0].name=hello-kubernetes <i class="conum" data-value="4"></i><b>(4)</b>
+spring.cloud.kubernetes.config.enabled=true</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>By default <code>ConfigMap</code> must be named with the name of the Spring application.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Sets the <code>ConfigMap</code> name to look up.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Sets the namespace where <code>ConfigMap</code> is deployed.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>In the case of multiple <code>ConfigMaps</code> you can set them using <code>sources</code> array.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The last step before deploying the application is to configure a <code>ServiceAccount</code> with the correct Kubernetes Roles so Spring Cloud Kubernetes Config can query the <code>ConfigMap</code> content using the Kubernetes API.
+Let&#8217;s use one of the features of JKube, that let you define fragments of Kubernetes objects and Jkube will merge all of them during generation phase.</p>
+</div>
+<div class="paragraph">
+<p>Create a new directory at <code>src/main/jkube</code> and place the following files:</p>
+</div>
+<div class="paragraph">
+<p>A fragment of a Deployment file that sets the number of replicas and the service account to run the application.
+JKube will automatically merge these properties with the autogenerated deployment file.</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">src/main/jkube/deployment.yaml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">spec:
+  replicas: 1
+  template:
+    spec:
+      serviceAccount: spring-boot</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then create another file that creates the service account:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">src/main/jkube/sa.yaml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spring-boot</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The definition of the role binding:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">src/main/jkube/rb.yaml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: spring-boot-view
+roleRef:
+  kind: Role
+  apiGroup: rbac.authorization.k8s.io
+  name: spring-boot-view
+subjects:
+  - kind: ServiceAccount
+    name: spring-boot</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And finally the role:</p>
+</div>
+<div class="listingblock console-input">
+<div class="title">src/main/jkube/rb.yaml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: spring-boot-view
+rules:
+  - apiGroups: [""]
+    resources: ["pods","configmaps", "services"]
+    verbs: ["get", "watch", "list"]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="deploying"><a class="anchor" href="#deploying"></a>Deploying</h3>
+<div class="paragraph">
+<p>Before deplpoying the application, we need to crete the <code>ConfigMap</code> in the Kubernetes cluster:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f src/main/resources/k8s/hello-kube-cm.yaml -n default</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">configmap/hello-kubernetes created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And we can now create the container image and deploy it to the cluster.</p>
+</div>
+<div class="paragraph">
+<p>Create and push the container image of the application:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw clean package k8s:build k8s:push -DskipTests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Generate the resources:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw k8s:resource</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And finally deploy the application:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f target/classes/META-INF/jkube/kubernetes.yml -n default</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                    READY   STATUS    RESTARTS   AGE
+hello-kubernetes-96c8574d6-cnbsp   1/1     Running   0          18s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then port forward the service so it&#8217;s accessible from localhost.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl port-forward -n default hello-kubernetes-96c8574d6-cnbsp  8080:8080</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">serviceaccount/spring-boot created
+service/hello-kubernetes created
+role.rbac.authorization.k8s.io/spring-boot-view created
+rolebinding.rbac.authorization.k8s.io/spring-boot-view created
+deployment.apps/hello-kubernetes created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally we can <code>curl</code> the service:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/greeting/alex</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Aloha alex</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cleanup"><a class="anchor" href="#cleanup"></a>Clean-Up</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Before stepping to the following section, stop the <code>kubectl port-forward</code> process by typing <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>C</kbd></span> on the terminal.</p>
+</div>
+<div class="paragraph">
+<p>Undeploy the service by deleteing all the resources created in the namespace:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete all --all -n default</code></pre>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="05-resiliency.html">5. Resiliency</a></span>
+</nav>
 </article>
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
   <div class="toc-menu"></div>
