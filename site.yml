@@ -15,6 +15,7 @@ asciidoc:
   attributes:
     release-version: master
     page-pagination: true
+    title: Spring Boot & Kubernetes
   extensions:
     - ./lib/tab-block.js
     - ./lib/remote-include-processor.js

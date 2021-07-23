@@ -1,20 +1,15 @@
-= Welcome to Template Tutorial
+= Welcome to Spring Boot & Kubernetes
 :page-layout: home
 :!sectids:
 
 [.text-center.strong]
-== Publish Services to Kubernetes
+== Overview
 
-A Kubernetes tutorial to show how you can deploy a Java service to a Kubernetes cluster as it was a child game.
+In this Spring Boot tutorial, you'll learn to use Spring Boot when your deployment platform is Kubernetes.
+Assuming you already know Spring Boot, you'll learn:
 
-[.tiles.browse]
-== Browse modules
-
-[.tile]
-.xref:01-setup.adoc[Get Started]
-* xref:01-setup.adoc#minikube[Minikube]
-
-[.tile]
-.xref:02-deploy.adoc[Deploying]
-* xref:02-deploy.adoc#package[Package the Application]
-* xref:02-deploy.adoc#deploy[Deploy the Application]
+* How to containerize a Spring Boot application with https://github.com/GoogleContainerTools/jib[Jib]
+* How to deploy it to a Kubernetes cluster with https://www.eclipse.org/jkube/[JKube]
+* Spring Actuators to implement health checks and provide metrics
+* Spring Resiliency
+* Spring Cloud Kubernetes Config to inject `ConfigMaps` as Spring configuration properties
