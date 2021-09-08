@@ -105,7 +105,7 @@ Let's configure Spring Boot to start using resiliency4j and add a timeout to the
 Open `HelloKubernetesApplication.java` file and add the following method to configure resiliency4J factory to use timeout strategy configured in one second .
 
 [.console-input]
-[source, java,subs="+macros,+attributes"]
+[source, java]
 .org.acme.hellokubernetes.HelloKubernetesApplication.java
 ----
 package org.acme.hellokubernetes;
@@ -128,7 +128,8 @@ public class HelloKubernetesApplication {
 	@Bean
 	public Customizer<Resilience4JCircuitBreakerFactory> defaultCustomizer() { // <1>
     return factory -> factory.configureDefault(id -> new Resilience4JConfigBuilder(id)
-            .timeLimiterConfig(TimeLimiterConfig.custom().timeoutDuration(Duration.ofSeconds(1)).build()) // <2>
+            .timeLimiterConfig(TimeLimiterConfig.custom().timeoutDuration(Duration.ofSeconds(1)).build())
+            .build() // <2>
         );
 	}
 
@@ -145,7 +146,7 @@ Then we need to wrap the code where circuit breaker must be applied.
 Open `HelloController.java` and wrap the `hello()` method:
 
 [.console-input]
-[source, java,subs="+macros,+attributes"]
+[source, java]
 .org.acme.hellokubernetes.HelloController.java
 ----
 package org.acme.hellokubernetes;

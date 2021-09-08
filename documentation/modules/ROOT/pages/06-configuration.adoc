@@ -168,7 +168,7 @@ And finally the role:
 
 [.console-input]
 [source, yaml]
-.src/main/jkube/rb.yaml
+.src/main/jkube/role.yaml
 ----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
