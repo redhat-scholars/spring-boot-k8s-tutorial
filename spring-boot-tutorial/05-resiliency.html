@@ -393,7 +393,8 @@ public class HelloKubernetesApplication {
 	@Bean
 	public Customizer&lt;Resilience4JCircuitBreakerFactory&gt; defaultCustomizer() { <i class="conum" data-value="1"></i><b>(1)</b>
     return factory -&gt; factory.configureDefault(id -&gt; new Resilience4JConfigBuilder(id)
-            .timeLimiterConfig(TimeLimiterConfig.custom().timeoutDuration(Duration.ofSeconds(1)).build()) <i class="conum" data-value="2"></i><b>(2)</b>
+            .timeLimiterConfig(TimeLimiterConfig.custom().timeoutDuration(Duration.ofSeconds(1)).build())
+            .build() <i class="conum" data-value="2"></i><b>(2)</b>
         );
 	}
 
@@ -455,7 +456,8 @@ public class HelloController {
 
     @GetMapping("/hello")
     String hello() {
-      return this.messageCircuitBreaker.run) -&gt; <i class="conum" data-value="4"></i><b>(4)</b>           "This is Spring calling a " + messageService.getMessage(;
+      return this.messageCircuitBreaker.run(() -&gt; <i class="conum" data-value="4"></i><b>(4)</b>
+          "This is Spring calling a " + messageService.getMessage());
     }
 
     @GetMapping("/hello/{name}")
