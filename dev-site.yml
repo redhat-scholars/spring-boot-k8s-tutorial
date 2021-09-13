@@ -14,6 +14,7 @@ content:
 asciidoc:
   attributes:
     title: Spring Boot & Kubernetes
+    page-pagination: true
   extensions:
     - ./lib/remote-include-processor.js
     - ./lib/tab-block.js
