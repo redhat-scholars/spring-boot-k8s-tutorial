@@ -3,8 +3,8 @@
 ** xref:01-setup.adoc#minikube[Setup Minikube]
 
 * xref:02-create.adoc[2. Create Application]
-** xref:02-deploy.adoc#startspringboot[Skaffold Sping Boot App.]
-** xref:02-deploy.adoc#buildrun[Build & Run]
+** xref:02-create.adoc#startspringboot[Skaffold Spring Boot App.]
+** xref:02-create.adoc#buildrun[Build & Run]
 
 * xref:03-kubernetes.adoc[3. Kubernetize Application]
 ** xref:03-kubernetes.adoc#jkube[JKube]
