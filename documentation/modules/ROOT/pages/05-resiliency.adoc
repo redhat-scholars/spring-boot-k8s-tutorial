@@ -393,7 +393,7 @@ To enable retries, annotate the `HelloKubernetesApplication.java` wfile with `@E
 The final step is to annotate the retryable method with `@Retryable` annotation:
 
 [.console-input]
-[source, java,subs="+macros,+attributes"]
+[source, java]
 .org.acme.hellokubernetes.HelloController.java
 ----
 package org.acme.hellokubernetes;
