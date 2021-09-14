@@ -725,7 +725,8 @@ public class HelloController {
 
     @GetMapping("/hello")
     String hello() {
-      return this.messageCircuitBreaker.run) -&gt;           "This is Spring calling a " + messageService.getMessage(;
+      return this.messageCircuitBreaker.run(() -&gt;
+          "This is Spring calling a " + messageService.getMessage());
     }
 
     @GetMapping("/hello/{name}")
