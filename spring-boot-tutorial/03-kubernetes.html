@@ -7,7 +7,7 @@
     <link rel="canonical" href="https://github.com/redhat-scholars/spring-boot-k8s-tutorial/spring-boot-tutorial/03-kubernetes.html">
     <link rel="prev" href="02-create.html">
     <link rel="next" href="04-actuators.html">
-    <meta name="generator" content="Antora 2.3.4">
+    <meta name="generator" content="Antora 3.0.0">
     <link rel="stylesheet" href="../_/css/site.css">
   </head>
   <body class="article">
@@ -202,7 +202,8 @@ All of them, might fit your requirements but they just cover one part of the equ
 <div class="title">pom.xml</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;jkube.build.strategy&gt;jib&lt;/jkube.build.strategy&gt;
-&lt;jkube.generator.name&gt;quay.io/lordofthejars/sb-hw:${project.version}&lt;/jkube.generator.name&gt;</code></pre>
+&lt;jkube.generator.name&gt;quay.io/sunix/sb-hw:${project.version}&lt;/jkube.generator.name&gt;
+&lt;jkube.createExternalUrls&gt;true&lt;/jkube.createExternalUrls&gt;</code></pre>
 </div>
 </div>
 <div class="admonitionblock important">
@@ -212,7 +213,7 @@ All of them, might fit your requirements but they just cover one part of the equ
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-Substitute <code>quay.io</code> for your container registry and <code>lordofthejars</code> with your username.
+Substitute <code>quay.io</code> for your container registry and <code>sunix</code> with your username.
 </td>
 </tr>
 </table>
@@ -226,7 +227,7 @@ Substitute <code>quay.io</code> for your container registry and <code>lordofthej
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;plugin&gt;
 	&lt;groupId&gt;org.eclipse.jkube&lt;/groupId&gt;
 	&lt;artifactId&gt;kubernetes-maven-plugin&lt;/artifactId&gt;
-	&lt;version&gt;1.2.0&lt;/version&gt;
+	&lt;version&gt;1.8.0&lt;/version&gt;
   &lt;configuration&gt;
 		&lt;resources&gt;
 			&lt;imagePullPolicy&gt;Always&lt;/imagePullPolicy&gt; <i class="conum" data-value="1"></i><b>(1)</b>
@@ -258,7 +259,7 @@ Substitute <code>quay.io</code> for your container registry and <code>lordofthej
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You can set username/password in the jkube project, but if not then <code>docker login</code> session is used.
+You can set username/password in the jkube project or in <code>.m2/settings.xml</code>, but if not then <code>docker login</code> session is used. See <a href="https://www.eclipse.org/jkube/docs/kubernetes-maven-plugin#authentication" class="bare">https://www.eclipse.org/jkube/docs/kubernetes-maven-plugin#authentication</a>.
 </td>
 </tr>
 </table>
@@ -270,7 +271,7 @@ You can set username/password in the jkube project, but if not then <code>docker
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw compile k8s:build k8s:push</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw package -DskipTests k8s:build k8s:push</code></pre>
 </div>
 </div>
 <div class="listingblock console-output">
@@ -278,24 +279,50 @@ You can set username/password in the jkube project, but if not then <code>docker
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">[INFO] k8s: Running in Kubernetes mode
 [INFO] k8s: Building Docker image in Kubernetes mode
 [INFO] k8s: Running generator spring-boot
-[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java-binary-s2i:0.0.9 as base / builder
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java:0.0.15 as base / builder
 [INFO] k8s: JIB image build started
-JIB&gt; Base image 'quay.io/jkube/jkube-java-binary-s2i:0.0.9' does not use a specific image digest - build may not be reproducible
+JIB&gt; Base image 'quay.io/jkube/jkube-java:0.0.15' does not use a specific image digest - build may not be reproducible
 JIB&gt; Containerizing application with the following files:
-JIB&gt; 	:
-JIB&gt; 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/Dockerfile
-JIB&gt; 	:
-JIB&gt; 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/deployments
-JIB&gt; 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/deployments/hello-kubernetes-0.0.1-SNAPSHOT.jar
-JIB&gt; Getting manifest for base image quay.io/jkube/jkube-java-binary-s2i:0.0.9...
-JIB&gt; Building  layer...
-JIB&gt; Building  layer...
-JIB&gt; Using base image with digest: sha256:dd5c9f44a86e19438662d293e180acc8d864887cf19c165c1b24ae703b16c2d4
+JIB&gt; 	Jkube-generated-layer-original:
+JIB&gt; 		/home/sunix/github/sunix/hello-kubernetes/target/hello-kubernetes-0.0.1-SNAPSHOT.jar
+JIB&gt; Getting manifest for base image quay.io/jkube/jkube-java:0.0.15...
+JIB&gt; Building jkube-generated-layer-original layer...
+JIB&gt; Using base image with digest: sha256:50ba176b6e37993a028732b713d6f239597fe124ad7dc81c5abe05b8ab5b2814
 JIB&gt; Container program arguments set to [/usr/local/s2i/run] (inherited from base image)
 JIB&gt; Building image to tar file...
 JIB&gt; [========================      ] 80.0% complete &gt; writing to tar file
 JIB&gt; [==============================] 100.0% complete
-[INFO] k8s:  /Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/tmp/docker-build.tar successfully built
+[INFO] k8s:  /home/sunix/github/sunix/hello-kubernetes/target/docker/quay.io/sunix/sb-hw/0.0.1-SNAPSHOT/tmp/docker-build.tar successfully built
+[INFO]
+[INFO] --- kubernetes-maven-plugin:1.8.0:push (default-cli) @ hello-kubernetes ---
+[INFO] k8s: Running in Kubernetes mode
+[INFO] k8s: Building Docker image in Kubernetes mode
+[INFO] k8s: Running generator spring-boot
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java:0.0.15 as base / builder
+[INFO] k8s: This push refers to: quay.io/sunix/sb-hw:0.0.1-SNAPSHOT
+JIB&gt; Containerizing application with the following files:
+JIB&gt; Container program arguments set to [/usr/local/s2i/run] (inherited from base image)
+JIB&gt; Building a single manifest
+JIB&gt; Checking existence of manifest for sha256:03d2b11cfdd191a2fa22f6c10eba3b14012ecb1f6e7d0e51f97553f90bee61d7...
+JIB&gt; Skipping manifest existence check; system property set to false
+JIB&gt; Skipping push; BLOB already exists on target registry : digest: sha256:38b71301a1d9df24c98b5a5ee8515404f42c929003ad8b13ab83d2de7de34dec, size: 1742
+JIB&gt; Skipping push; BLOB already exists on target registry : digest: sha256:4c502bd732043bc253180c5af6b13feeaaaebf4872ad2703c3c092e4d8bf5cef, size: 123456655
+JIB&gt; Skipping push; BLOB already exists on target registry : digest: sha256:a9e23b64ace00a199db21d302292b434e9d3956d79319d958ecc19603d00c946, size: 39622437
+JIB&gt; Pushing manifest for 0.0.1-SNAPSHOT...
+JIB&gt; [===========================   ] 90.9% complete &gt; launching manifest list pushers
+JIB&gt; [==============================] 100.0% complete
+JIB&gt; Containerizing application with the following files:
+JIB&gt; Container program arguments set to [/usr/local/s2i/run] (inherited from base image)
+JIB&gt; Building a single manifest
+JIB&gt; Checking existence of manifest for sha256:6e3bdcd41a3c43ad81059f4b09f23b80c5234be57800898703d8e679e14f3d52...
+JIB&gt; Skipping manifest existence check; system property set to false
+JIB&gt; Skipping push; BLOB already exists on target registry : digest: sha256:38b71301a1d9df24c98b5a5ee8515404f42c929003ad8b13ab83d2de7de34dec, size: 1742
+JIB&gt; Skipping push; BLOB already exists on target registry : digest: sha256:4c502bd732043bc253180c5af6b13feeaaaebf4872ad2703c3c092e4d8bf5cef, size: 123456655
+JIB&gt; Skipping push; BLOB already exists on target registry : digest: sha256:a9e23b64ace00a199db21d302292b434e9d3956d79319d958ecc19603d00c946, size: 39622437
+JIB&gt; Skipping push; BLOB already exists on target registry : digest: sha256:2170a78ac8f83c9847552d78f95b35ccfc9c2d44cf93805448f29096f493f693, size: 25356703
+JIB&gt; Pushing manifest for latest...
+JIB&gt; [===========================   ] 90.9% complete &gt; launching manifest list pushers
+JIB&gt; [==============================] 100.0% complete
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------</code></pre>
@@ -307,18 +334,42 @@ JIB&gt; [==============================] 100.0% complete
 <div class="paragraph">
 <p>JKube can generate an opinionated Kubernetes resources file for a Spring Boot application setting the image name generated in the previous step:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_minikube"></a>Minikube</p>
+</li>
+<li>
+<p><a id="tabset1_others-openshift-devsandbox-kubernetes"></a>Others (Openshift,Devsandbox,kubernetes)</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_minikube">
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw compile k8s:resource</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw k8s:resource -Djkube.domain=$(minikube ip).nip.io</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_others-openshift-devsandbox-kubernetes">
+<div class="paragraph">
+<p>Replace the domain with the one of your cluster</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw k8s:resource -Djkube.domain=apps.sandbox-m2.ll9k.p1.openshiftapps.com</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="listingblock console-output">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">[INFO] --- kubernetes-maven-plugin:1.2.0:resource (default-cli) @ hello-kubernetes ---
-[WARNING] k8s: Cannot access cluster for detecting mode: Unknown host kubernetes.default.svc: nodename nor servname provided, or not known
-[INFO] k8s: Running generator spring-boot
-[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java-binary-s2i:0.0.9 as base / builder
-[INFO] k8s: Using resource templates from /Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/src/main/jkube <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">[INFO] --- kubernetes-maven-plugin:1.8.0:resource (default-cli) @ hello-kubernetes ---
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java:0.0.15 as base / builder
+[INFO] k8s: Using resource templates from /home/sunix/github/sunix/hello-kubernetes/src/main/jkube <i class="conum" data-value="1"></i><b>(1)</b>
 [INFO] k8s: jkube-controller: Adding a default Deployment
 [INFO] k8s: jkube-service: Adding a default service 'hello-kubernetes' with ports [8080] <i class="conum" data-value="2"></i><b>(2)</b>
 [INFO] k8s: jkube-healthcheck-spring-boot: Adding readiness probe on port 8080, path='/actuator/health', scheme='HTTP', with initial delay 10 seconds <i class="conum" data-value="3"></i><b>(3)</b>
@@ -362,14 +413,11 @@ items:
   kind: Service
   metadata:
     annotations:
-      jkube.io/git-url: <a href="mailto:git@github.com">git@github.com</a>:lordofthejars/spring-boot-k8s-tutorial.git
-      jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
-      jkube.io/git-branch: master
       jkube.io/scm-url: <a href="https://github.com/spring-projects/spring-boot/hello-kubernetes" class="bare">https://github.com/spring-projects/spring-boot/hello-kubernetes</a>
+      prometheus.io/scrape: "true"
       jkube.io/scm-tag: HEAD
       prometheus.io/path: /metrics
       prometheus.io/port: "9779"
-      prometheus.io/scrape: "true"
     labels:
       expose: "true"
       app: hello-kubernetes
@@ -391,11 +439,8 @@ items:
   kind: Deployment
   metadata:
     annotations:
-      jkube.io/git-url: <a href="mailto:git@github.com">git@github.com</a>:lordofthejars/spring-boot-k8s-tutorial.git
-      jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
-      jkube.io/git-branch: master
-      jkube.io/scm-url: <a href="https://github.com/spring-projects/spring-boot/hello-kubernetes" class="bare">https://github.com/spring-projects/spring-boot/hello-kubernetes</a>
       jkube.io/scm-tag: HEAD
+      jkube.io/scm-url: <a href="https://github.com/spring-projects/spring-boot/hello-kubernetes" class="bare">https://github.com/spring-projects/spring-boot/hello-kubernetes</a>
     labels:
       app: hello-kubernetes
       provider: jkube
@@ -413,16 +458,14 @@ items:
     template:
       metadata:
         annotations:
-          jkube.io/scm-url: <a href="https://github.com/spring-projects/spring-boot/hello-kubernetes" class="bare">https://github.com/spring-projects/spring-boot/hello-kubernetes</a>
-          jkube.io/git-url: <a href="mailto:git@github.com">git@github.com</a>:lordofthejars/spring-boot-k8s-tutorial.git
           jkube.io/scm-tag: HEAD
-          jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
-          jkube.io/git-branch: master
+          jkube.io/scm-url: <a href="https://github.com/spring-projects/spring-boot/hello-kubernetes" class="bare">https://github.com/spring-projects/spring-boot/hello-kubernetes</a>
         labels:
           app: hello-kubernetes
           provider: jkube
           version: 0.0.1-SNAPSHOT
           group: org.acme
+        name: hello-kubernetes
       spec:
         containers:
         - env:
@@ -434,8 +477,8 @@ items:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          image: quay.io/lordofthejars/sb-hw:0.0.1-SNAPSHOT
-          imagePullPolicy: IfNotPresent
+          image: quay.io/sunix/sb-hw:0.0.1-SNAPSHOT
+          imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -464,7 +507,31 @@ items:
             initialDelaySeconds: 10
             successThreshold: 1
           securityContext:
-            privileged: false</code></pre>
+            privileged: false
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      jkube.io/scm-tag: HEAD
+      jkube.io/scm-url: <a href="https://github.com/spring-projects/spring-boot/hello-kubernetes" class="bare">https://github.com/spring-projects/spring-boot/hello-kubernetes</a>
+    labels:
+      app: hello-kubernetes
+      provider: jkube
+      version: 0.0.1-SNAPSHOT
+      group: org.acme
+    name: hello-kubernetes
+  spec:
+    rules:
+    - host: hello-kubernetes.apps.sandbox-m2.ll9k.p1.openshiftapps.com
+      http:
+        paths:
+        - backend:
+            service:
+              name: hello-kubernetes
+              port:
+                number: 8080
+          path: /
+          pathType: ImplementationSpecific</code></pre>
 </div>
 </div>
 </div>
