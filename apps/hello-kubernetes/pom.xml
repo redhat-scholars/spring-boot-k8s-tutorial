@@ -17,8 +17,8 @@
 		<java.version>11</java.version>
 		<spring-cloud.version>2020.0.2</spring-cloud.version>
 		<jkube.build.strategy>jib</jkube.build.strategy>
-		<jkube.generator.name>quay.io/lordofthejars/sb-hw:${project.version}</jkube.generator.name>
-		<jkube.enricher.jkube-controller.pullPolicy>Always</jkube.enricher.jkube-controller.pullPolicy>
+		<jkube.generator.name>quay.io/sunix/sb-hw:${project.version}</jkube.generator.name>
+		<jkube.createExternalUrls>true</jkube.createExternalUrls>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -81,13 +81,13 @@
 			<plugin>
 				<groupId>org.eclipse.jkube</groupId>
 				<artifactId>kubernetes-maven-plugin</artifactId>
-				<version>1.2.0</version>
+				<version>1.8.0</version>
 				<configuration>
 					<resources>
 						<imagePullPolicy>Always</imagePullPolicy>
 					</resources>
 				</configuration>
-			  </plugin>
+			</plugin>
 		</plugins>
 	</build>
 

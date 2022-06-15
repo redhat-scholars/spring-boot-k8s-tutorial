@@ -16,10 +16,11 @@ Open `pom.xml` file and add the following properties at `<properties>` section:
 .pom.xml
 ----
 <jkube.build.strategy>jib</jkube.build.strategy>
-<jkube.generator.name>quay.io/lordofthejars/sb-hw:${project.version}</jkube.generator.name>
+<jkube.generator.name>quay.io/sunix/sb-hw:${project.version}</jkube.generator.name>
+<jkube.createExternalUrls>true</jkube.createExternalUrls>
 ----
 
-IMPORTANT: Substitute `quay.io` for your container registry and `lordofthejars` with your username.
+IMPORTANT: Substitute `quay.io` for your container registry and `sunix` with your username.
 
 Then add the `jkube` plugin at `plugins` section just after the `spring-boot-maven-plugin` plugin:
 
@@ -30,7 +31,7 @@ Then add the `jkube` plugin at `plugins` section just after the `spring-boot-mav
 <plugin>
 	<groupId>org.eclipse.jkube</groupId>
 	<artifactId>kubernetes-maven-plugin</artifactId>
-	<version>1.2.0</version>
+	<version>1.8.0</version>
   <configuration>
 		<resources>
 			<imagePullPolicy>Always</imagePullPolicy> <!--1-->
@@ -48,7 +49,7 @@ Login into container registry running:
 docker login quay.io
 ----
 
-TIP: You can set username/password in the jkube project, but if not then `docker login` session is used.
+TIP: You can set username/password in the jkube project or in `.m2/settings.xml`, but if not then `docker login` session is used. See https://www.eclipse.org/jkube/docs/kubernetes-maven-plugin#authentication.
 
 [#create]
 === Building & Pushing
@@ -58,7 +59,7 @@ To build the Linux container image and push it to container registry run the fol
 [.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
-./mvnw compile k8s:build k8s:push
+./mvnw package -DskipTests k8s:build k8s:push
 ----
 
 [.console-output]
@@ -67,24 +68,50 @@ To build the Linux container image and push it to container registry run the fol
 [INFO] k8s: Running in Kubernetes mode
 [INFO] k8s: Building Docker image in Kubernetes mode
 [INFO] k8s: Running generator spring-boot
-[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java-binary-s2i:0.0.9 as base / builder
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java:0.0.15 as base / builder
 [INFO] k8s: JIB image build started
-JIB> Base image 'quay.io/jkube/jkube-java-binary-s2i:0.0.9' does not use a specific image digest - build may not be reproducible
-JIB> Containerizing application with the following files:
-JIB> 	:
-JIB> 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/Dockerfile
-JIB> 	:
-JIB> 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/deployments
-JIB> 		/Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/build/deployments/hello-kubernetes-0.0.1-SNAPSHOT.jar
-JIB> Getting manifest for base image quay.io/jkube/jkube-java-binary-s2i:0.0.9...
-JIB> Building  layer...
-JIB> Building  layer...
-JIB> Using base image with digest: sha256:dd5c9f44a86e19438662d293e180acc8d864887cf19c165c1b24ae703b16c2d4
-JIB> Container program arguments set to [/usr/local/s2i/run] (inherited from base image)
-JIB> Building image to tar file...
+JIB> Base image 'quay.io/jkube/jkube-java:0.0.15' does not use a specific image digest - build may not be reproducible 
+JIB> Containerizing application with the following files:                                    
+JIB> 	Jkube-generated-layer-original:                                                                               
+JIB> 		/home/sunix/github/sunix/hello-kubernetes/target/hello-kubernetes-0.0.1-SNAPSHOT.jar       
+JIB> Getting manifest for base image quay.io/jkube/jkube-java:0.0.15...
+JIB> Building jkube-generated-layer-original layer...
+JIB> Using base image with digest: sha256:50ba176b6e37993a028732b713d6f239597fe124ad7dc81c5abe05b8ab5b2814 
+JIB> Container program arguments set to [/usr/local/s2i/run] (inherited from base image) 
+JIB> Building image to tar file... 
 JIB> [========================      ] 80.0% complete > writing to tar file
 JIB> [==============================] 100.0% complete
-[INFO] k8s:  /Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/target/docker/quay.io/lordofthejars/sb-hw/0.0.1-SNAPSHOT/tmp/docker-build.tar successfully built
+[INFO] k8s:  /home/sunix/github/sunix/hello-kubernetes/target/docker/quay.io/sunix/sb-hw/0.0.1-SNAPSHOT/tmp/docker-build.tar successfully built
+[INFO]
+[INFO] --- kubernetes-maven-plugin:1.8.0:push (default-cli) @ hello-kubernetes ---
+[INFO] k8s: Running in Kubernetes mode
+[INFO] k8s: Building Docker image in Kubernetes mode
+[INFO] k8s: Running generator spring-boot
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java:0.0.15 as base / builder
+[INFO] k8s: This push refers to: quay.io/sunix/sb-hw:0.0.1-SNAPSHOT
+JIB> Containerizing application with the following files:
+JIB> Container program arguments set to [/usr/local/s2i/run] (inherited from base image)
+JIB> Building a single manifest
+JIB> Checking existence of manifest for sha256:03d2b11cfdd191a2fa22f6c10eba3b14012ecb1f6e7d0e51f97553f90bee61d7...
+JIB> Skipping manifest existence check; system property set to false
+JIB> Skipping push; BLOB already exists on target registry : digest: sha256:38b71301a1d9df24c98b5a5ee8515404f42c929003ad8b13ab83d2de7de34dec, size: 1742
+JIB> Skipping push; BLOB already exists on target registry : digest: sha256:4c502bd732043bc253180c5af6b13feeaaaebf4872ad2703c3c092e4d8bf5cef, size: 123456655
+JIB> Skipping push; BLOB already exists on target registry : digest: sha256:a9e23b64ace00a199db21d302292b434e9d3956d79319d958ecc19603d00c946, size: 39622437
+JIB> Pushing manifest for 0.0.1-SNAPSHOT...
+JIB> [===========================   ] 90.9% complete > launching manifest list pushers
+JIB> [==============================] 100.0% complete
+JIB> Containerizing application with the following files:
+JIB> Container program arguments set to [/usr/local/s2i/run] (inherited from base image)
+JIB> Building a single manifest
+JIB> Checking existence of manifest for sha256:6e3bdcd41a3c43ad81059f4b09f23b80c5234be57800898703d8e679e14f3d52...
+JIB> Skipping manifest existence check; system property set to false
+JIB> Skipping push; BLOB already exists on target registry : digest: sha256:38b71301a1d9df24c98b5a5ee8515404f42c929003ad8b13ab83d2de7de34dec, size: 1742
+JIB> Skipping push; BLOB already exists on target registry : digest: sha256:4c502bd732043bc253180c5af6b13feeaaaebf4872ad2703c3c092e4d8bf5cef, size: 123456655
+JIB> Skipping push; BLOB already exists on target registry : digest: sha256:a9e23b64ace00a199db21d302292b434e9d3956d79319d958ecc19603d00c946, size: 39622437
+JIB> Skipping push; BLOB already exists on target registry : digest: sha256:2170a78ac8f83c9847552d78f95b35ccfc9c2d44cf93805448f29096f493f693, size: 25356703
+JIB> Pushing manifest for latest...
+JIB> [===========================   ] 90.9% complete > launching manifest list pushers
+JIB> [==============================] 100.0% complete
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
@@ -95,20 +122,37 @@ JIB> [==============================] 100.0% complete
 
 JKube can generate an opinionated Kubernetes resources file for a Spring Boot application setting the image name generated in the previous step:
 
+
+[tabs]
+====
+Minikube::
++
+--
 [.console-input]
 [source, bash,subs="+macros,+attributes"]
 ----
-./mvnw compile k8s:resource
+./mvnw k8s:resource -Djkube.domain=$(minikube ip).nip.io
 ----
+--
+Others (Openshift,Devsandbox,kubernetes)::
++
+--
+Replace the domain with the one of your cluster
+[.console-input]
+[source, bash,subs="+macros,+attributes"]
+----
+./mvnw k8s:resource -Djkube.domain=apps.sandbox-m2.ll9k.p1.openshiftapps.com
+----
+
+--
+====
 
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-[INFO] --- kubernetes-maven-plugin:1.2.0:resource (default-cli) @ hello-kubernetes ---
-[WARNING] k8s: Cannot access cluster for detecting mode: Unknown host kubernetes.default.svc: nodename nor servname provided, or not known
-[INFO] k8s: Running generator spring-boot
-[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java-binary-s2i:0.0.9 as base / builder
-[INFO] k8s: Using resource templates from /Users/asotobu/git/spring-boot-k8s-tutorial/apps/hello-kubernetes/src/main/jkube // <1>
+[INFO] --- kubernetes-maven-plugin:1.8.0:resource (default-cli) @ hello-kubernetes ---
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java:0.0.15 as base / builder
+[INFO] k8s: Using resource templates from /home/sunix/github/sunix/hello-kubernetes/src/main/jkube // <1>
 [INFO] k8s: jkube-controller: Adding a default Deployment
 [INFO] k8s: jkube-service: Adding a default service 'hello-kubernetes' with ports [8080] // <2>
 [INFO] k8s: jkube-healthcheck-spring-boot: Adding readiness probe on port 8080, path='/actuator/health', scheme='HTTP', with initial delay 10 seconds // <3>
@@ -140,14 +184,11 @@ items:
   kind: Service
   metadata:
     annotations:
-      jkube.io/git-url: git@github.com:lordofthejars/spring-boot-k8s-tutorial.git
-      jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
-      jkube.io/git-branch: master
       jkube.io/scm-url: https://github.com/spring-projects/spring-boot/hello-kubernetes
+      prometheus.io/scrape: "true"
       jkube.io/scm-tag: HEAD
       prometheus.io/path: /metrics
       prometheus.io/port: "9779"
-      prometheus.io/scrape: "true"
     labels:
       expose: "true"
       app: hello-kubernetes
@@ -169,11 +210,8 @@ items:
   kind: Deployment
   metadata:
     annotations:
-      jkube.io/git-url: git@github.com:lordofthejars/spring-boot-k8s-tutorial.git
-      jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
-      jkube.io/git-branch: master
-      jkube.io/scm-url: https://github.com/spring-projects/spring-boot/hello-kubernetes
       jkube.io/scm-tag: HEAD
+      jkube.io/scm-url: https://github.com/spring-projects/spring-boot/hello-kubernetes
     labels:
       app: hello-kubernetes
       provider: jkube
@@ -191,16 +229,14 @@ items:
     template:
       metadata:
         annotations:
-          jkube.io/scm-url: https://github.com/spring-projects/spring-boot/hello-kubernetes
-          jkube.io/git-url: git@github.com:lordofthejars/spring-boot-k8s-tutorial.git
           jkube.io/scm-tag: HEAD
-          jkube.io/git-commit: bec3e5656eceee5be9c7be95499e1c8a718f06d9
-          jkube.io/git-branch: master
+          jkube.io/scm-url: https://github.com/spring-projects/spring-boot/hello-kubernetes
         labels:
           app: hello-kubernetes
           provider: jkube
           version: 0.0.1-SNAPSHOT
           group: org.acme
+        name: hello-kubernetes
       spec:
         containers:
         - env:
@@ -212,8 +248,8 @@ items:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          image: quay.io/lordofthejars/sb-hw:0.0.1-SNAPSHOT
-          imagePullPolicy: IfNotPresent
+          image: quay.io/sunix/sb-hw:0.0.1-SNAPSHOT
+          imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -243,6 +279,30 @@ items:
             successThreshold: 1
           securityContext:
             privileged: false
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      jkube.io/scm-tag: HEAD
+      jkube.io/scm-url: https://github.com/spring-projects/spring-boot/hello-kubernetes
+    labels:
+      app: hello-kubernetes
+      provider: jkube
+      version: 0.0.1-SNAPSHOT
+      group: org.acme
+    name: hello-kubernetes
+  spec:
+    rules:
+    - host: hello-kubernetes.apps.sandbox-m2.ll9k.p1.openshiftapps.com
+      http:
+        paths:
+        - backend:
+            service:
+              name: hello-kubernetes
+              port:
+                number: 8080
+          path: /
+          pathType: ImplementationSpecific
 ----
 
 === Kubernetes Deploy
