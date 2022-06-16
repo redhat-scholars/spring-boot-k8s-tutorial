@@ -18,7 +18,9 @@ Open `pom.xml` file and add the following properties at `<properties>` section:
 <jkube.build.strategy>jib</jkube.build.strategy>
 <jkube.generator.name>quay.io/sunix/sb-hw:${project.version}</jkube.generator.name>
 <jkube.createExternalUrls>true</jkube.createExternalUrls>
+<jkube.enricher.jkube-controller.pullPolicy>Always</jkube.enricher.jkube-controller.pullPolicy> <!--1-->
 ----
+<1> Configures `imagePullPolicy` attribute
 
 IMPORTANT: Substitute `quay.io` for your container registry and `sunix` with your username.
 
@@ -32,14 +34,9 @@ Then add the `jkube` plugin at `plugins` section just after the `spring-boot-mav
 	<groupId>org.eclipse.jkube</groupId>
 	<artifactId>kubernetes-maven-plugin</artifactId>
 	<version>1.8.0</version>
-  <configuration>
-		<resources>
-			<imagePullPolicy>Always</imagePullPolicy> <!--1-->
-		</resources>
-	</configuration>
 </plugin>
 ----
-<1> Configures `imagePullPolicy` attribute
+
 
 Login into container registry running:
 
