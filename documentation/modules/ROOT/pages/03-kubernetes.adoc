@@ -31,7 +31,7 @@ Then add the `jkube` plugin at `plugins` section just after the `spring-boot-mav
 <plugin>
 	<groupId>org.eclipse.jkube</groupId>
 	<artifactId>kubernetes-maven-plugin</artifactId>
-	<version>1.8.0</version>
+	<version>1.9.1</version>
   <configuration>
 		<resources>
 			<imagePullPolicy>Always</imagePullPolicy> <!--1-->

@@ -13,7 +13,7 @@ include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-c
 [#minikube]
 == Setup Kubernetes
 
-:profile: my_profile
+:profile: my-profile
 
 include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/kubernetes-setup.adoc[]
 
